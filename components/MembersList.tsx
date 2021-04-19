@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 
-import { apiBase } from "../lib/shorthands";
+import { fetchMembers, MembersArray, apiErrorHandler } from "../lib/api";
 
 import Icon from "@mdi/react";
 import { mdiCircle } from "@mdi/js";
@@ -10,7 +9,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
 import updateLocale from "dayjs/plugin/updateLocale";
-import { LoggedOutReasonCodes } from "../pages/dashboard";
+import { LoggedOutReasonCodes } from "../lib/shorthands";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -35,61 +34,19 @@ dayjs.updateLocale("en", {
   },
 });
 
-axios.defaults.baseURL = apiBase;
-
-type membersData = Array<{
-  ign: string;
-  lastseen: string | null;
-  location: string | null;
-  nickname: string;
-  online: boolean;
-  onlineFor: number; // milliseconds
-  skinURL: string;
-  uuid: string;
-}>;
-
-const fetchMembers = async () => {
-  return axios
-    .get<membersData>("/members", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-    .then(
-      (res): membersData => {
-        res.data[1].online = true;
-        res.data[1].onlineFor = 200000;
-        res.data[1].location = "survival 2020";
-
-        return res.data.sort((l, r) => {
-          if (!l.online && !r.online)
-            return new Date(r.lastseen ?? 0).valueOf() - new Date(l.lastseen ?? 0).valueOf();
-
-          return r.onlineFor - l.onlineFor;
-        });
-      }
-    );
-};
-
 interface MembersListProps {
-  onInvalidToken?: (reason?: LoggedOutReasonCodes) => void;
+  logout?: (reason?: LoggedOutReasonCodes) => void;
 }
 
-const MembersList: FC<MembersListProps> = ({ onInvalidToken }) => {
-  const [members, setMembers] = useState<membersData>();
+const MembersList: FC<MembersListProps> = ({ logout }) => {
+  const [members, setMembers] = useState<MembersArray>();
 
   useEffect(() => {
-    fetchMembers()
+    fetchMembers(localStorage.getItem("accessToken") ?? "")
       .then((data) => {
         setMembers(data);
       })
-      .catch((err: AxiosError) => {
-        if (err.response?.status === 403) {
-          onInvalidToken?.("invalid_token");
-        } else {
-          console.error(err);
-        }
-      });
+      .catch((err) => apiErrorHandler(err, logout));
   }, []);
 
   return (
