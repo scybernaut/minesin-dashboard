@@ -17,6 +17,7 @@ export type LayoutProps = {
   action?: string | null;
   className?: string;
   alwaysTransparent?: boolean;
+  useSolid?: boolean;
 };
 
 const Layout: React.FC<LayoutProps> = ({
@@ -25,12 +26,15 @@ const Layout: React.FC<LayoutProps> = ({
   children,
   className,
   action,
+  useSolid,
   alwaysTransparent,
 }) => {
   const router = useRouter();
   const pageIndex = navs?.findIndex((nav) => nav.href === router.pathname);
   const [transparent, setTransparent] = useState(true);
   const scrollRef = useRef<HTMLElement>(null);
+
+  if (useSolid === undefined) useSolid = true;
 
   const checkScroll = throttle(() => {
     const scrollTop: number = window.scrollY;
@@ -48,10 +52,12 @@ const Layout: React.FC<LayoutProps> = ({
   const toggleNav = () => setNavOpen(!navOpen);
 
   return (
-    <div className={`flex flex-col h-screen w-full ${color}`}>
+    <div className={`flex flex-col w-full ${color}`}>
       <>
         <header
-          className={l1`w-full p-3 ${transparent ? "transparent" : "bg-primary"}
+          className={l1`w-full p-3 ${
+            transparent ? (useSolid ? color : "transparent") : "bg-primary"
+          }
               duration-500 ease-in transition-colors text-on-primary flex-grow-0
               top-0 left-0 right-0 sticky z-20`}
         >
