@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-import { /*Disclosure,*/ Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import { focusRing } from "../lib/shorthands";
 
 import Icon from "@mdi/react";
@@ -30,7 +30,7 @@ const Layout: React.FC<LayoutProps> = ({
   const router = useRouter();
   const pageIndex = navs?.findIndex((nav) => nav.href === router.pathname);
   const [transparent, setTransparent] = useState(true);
-  const scrollRef = React.useRef<HTMLElement>(null);
+  const scrollRef = useRef<HTMLElement>(null);
 
   const checkScroll = throttle(() => {
     const scrollTop: number = window.scrollY;
