@@ -55,13 +55,13 @@ const Layout: React.FC<LayoutProps> = ({
     <div className={`flex flex-col w-full ${color}`}>
       <>
         <header
-          className={l1`w-full p-3 ${
+          className={l1`w-full h-nav p-3 ${
             transparent ? (useSolid ? color : "transparent") : "bg-primary"
           }
               duration-500 ease-in transition-colors text-on-primary flex-grow-0
               top-0 left-0 right-0 sticky z-20`}
         >
-          <div className="flex items-center justify-center h-8">
+          <div className="flex items-center justify-center h-full">
             {navs != null ? (
               <Transition
                 show
@@ -77,10 +77,9 @@ const Layout: React.FC<LayoutProps> = ({
                   onClick={toggleNav}
                 >
                   <Icon
-                    {...{
-                      path: navOpen ? mdiClose : mdiMenu,
-                      title: navOpen ? "Hide navigation menu" : "Show navigation menu",
-                    }}
+                    path={navOpen ? mdiClose : mdiMenu}
+                    title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
+                    id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
                   />
                 </button>
               </Transition>
@@ -90,16 +89,13 @@ const Layout: React.FC<LayoutProps> = ({
                 MINESIN
               </a>
             </Link>
-            {() => {
-              if (action === null) return null;
-              return (
-                <div
-                  className={`flex items-center justify-center w-8 h-8 absolute top-3 right-3 rounded ${focusRing}`}
-                >
-                  {action === "login" && <Icon path={mdiLoginVariant} title="Log in" />}
-                </div>
-              );
-            }}
+            {action === null ? null : (
+              <div
+                className={`flex items-center justify-center w-8 h-8 absolute top-3 right-3 rounded ${focusRing}`}
+              >
+                {action === "login" && <Icon path={mdiLoginVariant} title="Log in" />}
+              </div>
+            )}
           </div>
         </header>
         {navs != null ? (
@@ -131,7 +127,7 @@ const Layout: React.FC<LayoutProps> = ({
         ) : null}
       </>
       <main
-        className={`flex-grow ${color} ${className}`}
+        className={`flex-grow min-h-non-nav ${color} ${className}`}
         ref={scrollRef}
         onClick={() => {
           setNavOpen(false);
