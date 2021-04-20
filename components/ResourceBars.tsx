@@ -32,10 +32,18 @@ const ResourceBar: FC<ResourceBarProps> = ({ api }) => {
   const [ramUsage, setRAMUsage] = useState(0);
 
   useEffect(() => {
-    if (api !== undefined) {
-      api.getCPUUsage().then((usage) => setCPUUsage(usage ?? 0));
-      api.getRAMUsage().then((usage) => setRAMUsage(usage ?? 0));
-    }
+    if (api === undefined) return;
+
+    const cpuUsagePromise = api.getCPUUsage();
+    const ramUsagePromise = api.getRAMUsage();
+
+    cpuUsagePromise.promise.then((usage) => setCPUUsage(usage ?? 0));
+    ramUsagePromise.promise.then((usage) => setRAMUsage(usage ?? 0));
+
+    return () => {
+      cpuUsagePromise.cancel();
+      ramUsagePromise.cancel();
+    };
   }, [api]);
 
   const cpuColor = getBreakpoint(cpuUsage);

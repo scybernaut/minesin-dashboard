@@ -41,7 +41,11 @@ const MembersList: FC<MembersListProps> = ({ api }) => {
   const [members, setMembers] = useState<MembersArray>();
 
   useEffect(() => {
-    if (api !== undefined) api.getMembers().then((members) => setMembers(members ?? []));
+    if (api === undefined) return;
+
+    const membersPromise = api.getMembers();
+    membersPromise.promise.then((members) => setMembers(members ?? []));
+    return () => membersPromise.cancel();
   }, [api]);
 
   return (

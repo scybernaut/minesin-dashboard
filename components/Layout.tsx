@@ -44,7 +44,10 @@ const Layout: React.FC<LayoutProps> = ({
   }, 500);
 
   useEffect(() => {
-    if (!alwaysTransparent) window.addEventListener("scroll", checkScroll);
+    if (alwaysTransparent) return;
+
+    window.addEventListener("scroll", checkScroll);
+    return () => window.removeEventListener("scroll", checkScroll);
   }, []);
 
   const [navOpen, setNavOpen] = useState(false);
