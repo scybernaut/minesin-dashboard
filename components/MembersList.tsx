@@ -44,7 +44,11 @@ const MembersList: FC<MembersListProps> = ({ api }) => {
     if (api === undefined) return;
 
     const membersPromise = api.getMembers();
-    membersPromise.promise.then((members) => setMembers(members ?? []));
+    membersPromise.promise
+      .then((members) => setMembers(members ?? []))
+      .catch((reason) => {
+        if (reason.isCancelled !== true) throw reason;
+      });
     return () => membersPromise.cancel();
   }, [api]);
 
