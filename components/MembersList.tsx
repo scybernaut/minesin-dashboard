@@ -56,7 +56,7 @@ const MembersList: FC<MembersListProps> = ({ api }) => {
           <li key={member.uuid} className="h-10 flex items-center">
             <img
               src={member.skinURL}
-              className="h-full w-10 flex-shrink-0 bg-gray-300 rounded-md"
+              className="h-full w-10 flex-shrink-0 bg-gray-300 rounded-sm"
             ></img>
             <p className="ml-2 flex-shrink-0">
               <span className="font-semibold">{member.ign}</span>

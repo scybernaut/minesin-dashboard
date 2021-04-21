@@ -12,7 +12,7 @@ interface ResourceBarProps {
 }
 
 const colorBreakpoints = [
-  { max: 40, text: "text-green-500", bg: "bg-green-500" },
+  { max: 30, text: "text-green-500", bg: "bg-green-500" },
   { max: 80, text: "text-yellow-500", bg: "bg-yellow-500" },
   { text: "text-red-500", bg: "bg-red-500" },
 ];
