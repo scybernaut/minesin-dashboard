@@ -1,5 +1,5 @@
 import Layout from "../../components/Layout";
-import { dashboardNavs } from "../../lib/navs";
+import { dashboardActions } from "../../lib/actions";
 import MinesinAPI, { MembersArray } from "../../lib/api";
 
 import MembersList from "../../components/MembersList";
@@ -7,7 +7,6 @@ import ResourceBars from "../../components/ResourceBars";
 
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { logoutOptions, routeLogout } from "../../lib/shorthands";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -43,15 +42,9 @@ export default function Dashboard() {
 
   return (
     <Layout
-      navs={dashboardNavs}
+      actions={dashboardActions(router)}
       color="bg-gray-900"
       className="text-white p-4 mx-auto grid grid-cols-1 auto-rows-min gap-4 min-w-full"
-      action={{
-        name: "logout",
-        onClick: () => {
-          routeLogout(router, "logout", logoutOptions.removeToken);
-        },
-      }}
     >
       <MembersList members={members ?? []} />
       <ResourceBars

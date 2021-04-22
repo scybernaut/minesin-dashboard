@@ -74,7 +74,7 @@ export default function AuthPage() {
 
   return (
     <Layout
-      navs={null}
+      actions={{ navs: null }}
       color="bg-gray-900"
       className="text-white flex flex-col items-center justify-center"
     >
