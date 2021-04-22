@@ -7,6 +7,7 @@ import ResourceBars from "../../components/ResourceBars";
 
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { logoutOptions, routeLogout } from "../../lib/shorthands";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -44,7 +45,13 @@ export default function Dashboard() {
     <Layout
       navs={dashboardNavs}
       color="bg-gray-900"
-      className="text-white m-4 grid grid-cols-1 auto-rows-min gap-4"
+      className="text-white p-4 mx-auto grid grid-cols-1 auto-rows-min gap-4 min-w-full"
+      action={{
+        name: "logout",
+        onClick: () => {
+          routeLogout(router, "logout", logoutOptions.removeToken);
+        },
+      }}
     >
       <MembersList members={members ?? []} />
       <ResourceBars

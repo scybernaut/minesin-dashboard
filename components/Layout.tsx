@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, MouseEventHandler } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -6,7 +6,7 @@ import { Transition } from "@headlessui/react";
 import { focusRing } from "../lib/shorthands";
 
 import Icon from "@mdi/react";
-import { mdiLoginVariant, mdiClose, mdiMenu } from "@mdi/js";
+import { mdiClose, mdiMenu, mdiLogoutVariant } from "@mdi/js";
 
 import { oneLine as l1 } from "common-tags";
 import throttle from "lodash/throttle";
@@ -14,7 +14,10 @@ import throttle from "lodash/throttle";
 export type LayoutProps = {
   navs: Array<{ name: string; href: string }> | null;
   color: string;
-  action?: string | null;
+  action?: {
+    name: string;
+    onClick: MouseEventHandler;
+  };
   className?: string;
   alwaysTransparent?: boolean;
   useSolid?: boolean;
@@ -58,10 +61,9 @@ const Layout: React.FC<LayoutProps> = ({
     <div className={`flex flex-col w-full ${color}`}>
       <>
         <header
-          className={l1`w-full h-nav p-3 ${
-            transparent ? (useSolid ? color : "transparent") : "bg-primary"
-          }
-              duration-500 ease-in transition-colors text-on-primary flex-grow-0
+          className={l1`w-full h-nav p-3
+              ${transparent ? (useSolid ? color : "transparent") : "bg-primary"}
+              transition-colors duration-300 ease-in text-on-primary flex-grow-0
               top-0 left-0 right-0 sticky z-20`}
         >
           <div className="flex items-center justify-center h-full">
@@ -92,13 +94,16 @@ const Layout: React.FC<LayoutProps> = ({
                 MINESIN
               </a>
             </Link>
-            {action === null ? null : (
-              <div
+            {action ? (
+              <button
                 className={`flex items-center justify-center w-8 h-8 absolute top-3 right-3 rounded ${focusRing}`}
+                onClick={action.onClick}
               >
-                {action === "login" && <Icon path={mdiLoginVariant} title="Log in" />}
-              </div>
-            )}
+                {action.name === "logout" && (
+                  <Icon path={mdiLogoutVariant} title="Log out" id="logout" />
+                )}
+              </button>
+            ) : null}
           </div>
         </header>
         {navs != null ? (
@@ -112,25 +117,24 @@ const Layout: React.FC<LayoutProps> = ({
             leaveTo="opacity-0 scale-0"
             className={l1`fixed left-0 top-14 z-10 mx-3 py-1 rounded
             bg-white text-black shadow-md border-2`}
+            as="nav"
           >
-            <nav>
-              {navs?.map((nav, index) => (
-                <Link href={nav.href} key={nav.name}>
-                  <a
-                    className={`block font-medium pl-4 pr-6 py-2 rounded ${
-                      index === pageIndex && "text-primary-light font-bold"
-                    }`}
-                  >
-                    {nav.name}
-                  </a>
-                </Link>
-              ))}
-            </nav>
+            {navs?.map((nav, index) => (
+              <Link href={nav.href} key={nav.name}>
+                <a
+                  className={`block font-medium pl-4 pr-6 py-2 rounded ${
+                    index === pageIndex && "text-primary-light font-bold"
+                  }`}
+                >
+                  {nav.name}
+                </a>
+              </Link>
+            ))}
           </Transition>
         ) : null}
       </>
       <main
-        className={`flex-grow min-h-non-nav ${color} ${className}`}
+        className={`flex-grow min-h-non-nav ${color} ${className ? className : ""}`}
         ref={scrollRef}
         onClick={() => {
           setNavOpen(false);
