@@ -5,11 +5,14 @@ import { mdiCircle } from "@mdi/js";
 
 import ProgressBar from "./ProgressBar";
 
+import { oneLine as l1 } from "common-tags";
+
 interface ResourceBarProps {
   usages: {
     cpu: number;
     ram: number;
   };
+  className?: string;
 }
 
 const colorBreakpoints = [
@@ -28,14 +31,17 @@ const getBreakpoint = (value: number) => {
   return colorBreakpoints[colorBreakpoints.length - 1];
 };
 
-const ResourceBar: FC<ResourceBarProps> = ({ usages }) => {
+const ResourceBar: FC<ResourceBarProps> = ({ usages, className }) => {
   const cpuColor = getBreakpoint(usages.cpu);
   const ramColor = getBreakpoint(usages.ram);
 
   return (
-    <div className="bg-white text-black p-4 rounded-md">
-      <h2 className="text-2xl font-bold mb-3">Resources</h2>
-      <p className="font-medium">CPU Usage</p>
+    <div
+      className={l1`bg-white text-black dark:bg-gray-800 dark:text-white
+                    p-4 rounded-md ${className ? className : ""}`}
+    >
+      <h2 className="text-2xl font-bold mb-4">Resources</h2>
+      <p className="font-semibold">CPU Usage</p>
       <ProgressBar color={cpuColor.bg} progress={usages.cpu} />
       <p className="mb-2">
         <Icon
@@ -45,7 +51,7 @@ const ResourceBar: FC<ResourceBarProps> = ({ usages }) => {
         />{" "}
         Used: {usages.cpu.toFixed(2)}%
       </p>
-      <p className="font-medium">RAM Usage</p>
+      <p className="font-semibold">RAM Usage</p>
       <ProgressBar color={ramColor.bg} progress={usages.ram} />
       <p className="mb-2">
         <Icon

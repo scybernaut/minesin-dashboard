@@ -6,7 +6,7 @@ import { Transition } from "@headlessui/react";
 import { focusRing } from "../lib/shorthands";
 
 import Icon from "@mdi/react";
-import { mdiClose, mdiMenu, mdiLogoutVariant } from "@mdi/js";
+import { mdiClose, mdiMenu, mdiLogoutVariant, mdiBrightness3, mdiBrightness7 } from "@mdi/js";
 
 import { oneLine as l1 } from "common-tags";
 import throttle from "lodash/throttle";
@@ -23,8 +23,10 @@ export type LayoutProps = {
   color: string;
   actions: LayoutActions;
   className?: string;
-  alwaysTransparent?: boolean;
   useSolid?: boolean;
+  always?: string;
+  fullWidth?: boolean;
+  noToggle?: boolean;
 };
 
 const Layout: React.FC<LayoutProps> = ({
@@ -33,24 +35,32 @@ const Layout: React.FC<LayoutProps> = ({
   className,
   actions,
   useSolid,
-  alwaysTransparent,
+  always,
+  fullWidth,
+  noToggle,
 }) => {
   const router = useRouter();
   const pageIndex = actions.navs?.findIndex((nav) => nav.href === router.pathname);
-  const [transparent, setTransparent] = useState(true);
+  const [transparent, setTransparent] = useState(always !== "solid");
   const scrollRef = useRef<HTMLElement>(null);
 
   if (useSolid === undefined) useSolid = true;
 
-  const checkScroll = throttle(() => {
-    const scrollTop: number = window.scrollY;
-
-    if (scrollTop > 10) setTransparent(false);
-    else setTransparent(true);
-  }, 500);
+  const [darkTheme, setDarkTheme] = useState(true);
 
   useEffect(() => {
-    if (alwaysTransparent) return;
+    setDarkTheme(localStorage.getItem("darkTheme") !== "false");
+  }, []);
+
+  useEffect(() => {
+    if (always !== undefined) return;
+
+    const checkScroll = throttle(() => {
+      const scrollTop: number = window.scrollY;
+
+      if (scrollTop > 10) setTransparent(false);
+      else setTransparent(true);
+    }, 500);
 
     window.addEventListener("scroll", checkScroll);
     return () => window.removeEventListener("scroll", checkScroll);
@@ -61,81 +71,113 @@ const Layout: React.FC<LayoutProps> = ({
   const toggleNav = () => setNavOpen(!navOpen);
 
   return (
-    <div className={`flex flex-col w-full ${color}`}>
-      <>
-        <header
-          className={l1`w-full h-nav p-3
+    <div className={`flex flex-col w-full ${darkTheme ? "dark" : ""} ${color}`}>
+      <header
+        className={l1`w-full h-nav p-3
               ${transparent ? (useSolid ? color : "transparent") : "bg-primary"}
               transition-colors duration-300 ease-in text-on-primary flex-grow-0
-              top-0 left-0 right-0 sticky z-20`}
+              top-0 left-0 right-0 sticky z-10 flex items-center justify-center`}
+      >
+        <Link href="/">
+          <a className="text-2xl font-extrabold font-minecraft select-none relative z-10 transform translate-y-1.5 translate-x-0.5">
+            MINESIN
+          </a>
+        </Link>
+        <div
+          className={l1`absolute top-0 w-full p-3 mx-auto
+                          ${fullWidth ? "" : "max-w-5xl"} flex justify-between`}
         >
-          <div className="flex items-center justify-center h-full">
+          <div>
             {actions.navs != null ? (
-              <Transition
-                show
-                appear
-                enter="transition ease-in-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-              >
-                <button
-                  className={`flex items-center justify-center
-                absolute top-3 left-3 w-8 h-8 rounded ${focusRing}
-                transition-opacity duration-100 ease-in-out`}
-                  onClick={toggleNav}
+              <>
+                <Transition
+                  show
+                  appear
+                  enter="transition ease-in-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
                 >
-                  <Icon
-                    path={navOpen ? mdiClose : mdiMenu}
-                    title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
-                    id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
-                  />
-                </button>
-              </Transition>
+                  <button
+                    className={`flex items-center justify-center
+                top-3 left-3 w-8 h-8 rounded ${focusRing}
+                transition-opacity duration-100 ease-in-out`}
+                    onClick={toggleNav}
+                  >
+                    <Icon
+                      path={navOpen ? mdiClose : mdiMenu}
+                      title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
+                      id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
+                    />
+                  </button>
+                </Transition>
+                <Transition
+                  show={navOpen}
+                  enter="transition ease-in-out duration-300 transform origin-top-left"
+                  enterFrom="opacity-0 scale-0"
+                  enterTo="opacity-100 scale-100"
+                  leave="transition ease-in-out duration-150 transform origin-top-left"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-0"
+                  className={l1`relative mx-1 my-2 py-1 rounded
+                                  bg-white text-black shadow-md border-2`}
+                  as="nav"
+                >
+                  {actions.navs?.map((nav, index) => (
+                    <Link href={nav.href} key={nav.name}>
+                      <a
+                        className={`block font-medium pl-4 pr-6 py-2 rounded ${
+                          index === pageIndex && "text-primary-light font-bold"
+                        }`}
+                      >
+                        {nav.name}
+                      </a>
+                    </Link>
+                  ))}
+                </Transition>
+              </>
             ) : null}
-            <Link href="/">
-              <a className="text-2xl font-extrabold font-minecraft transform translate-y-1.5 translate-x-0.5">
-                MINESIN
-              </a>
-            </Link>
+          </div>
+          <div className="flex items-center top-3 right-3 h-8 gap-1 sm:gap-4">
+            {noToggle ? null : (
+              <button
+                className={`flex items-center justify-center h-8 top-3 right-3 rounded ${focusRing}`}
+                onClick={() => {
+                  localStorage.setItem("darkTheme", (!darkTheme).toString());
+                  setDarkTheme(!darkTheme);
+                }}
+              >
+                <p className="font-medium mr-1 hidden sm:block">{`${
+                  darkTheme ? "Light" : "Dark"
+                } theme`}</p>
+                <Icon
+                  path={darkTheme ? mdiBrightness7 : mdiBrightness3}
+                  title="Toggle dark theme"
+                  id="theme-toggle"
+                  className="w-8 h-8 sm:h-6 sm:w-6"
+                />
+              </button>
+            )}
             {actions.buttonAction ? (
               <button
-                className={`flex items-center justify-center w-8 h-8 absolute top-3 right-3 rounded ${focusRing}`}
+                className={`flex items-center justify-center h-8 rounded ${focusRing}`}
                 onClick={actions.buttonAction.onClick}
               >
                 {actions.buttonAction.name === "logout" && (
-                  <Icon path={mdiLogoutVariant} title="Log out" id="logout" />
+                  <>
+                    <p className="font-medium mr-1 hidden sm:block">Log out</p>
+                    <Icon
+                      path={mdiLogoutVariant}
+                      title="Log out"
+                      id="logout"
+                      className="w-8 h-8 sm:h-6 sm:w-6"
+                    />
+                  </>
                 )}
               </button>
             ) : null}
           </div>
-        </header>
-        {actions.navs != null ? (
-          <Transition
-            show={navOpen}
-            enter="transition ease-in-out duration-300 transform origin-top-left"
-            enterFrom="opacity-0 scale-0"
-            enterTo="opacity-100 scale-100"
-            leave="transition ease-in-out duration-150 transform origin-top-left"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-0"
-            className={l1`fixed left-0 top-14 z-10 mx-3 py-1 rounded
-            bg-white text-black shadow-md border-2`}
-            as="nav"
-          >
-            {actions.navs?.map((nav, index) => (
-              <Link href={nav.href} key={nav.name}>
-                <a
-                  className={`block font-medium pl-4 pr-6 py-2 rounded ${
-                    index === pageIndex && "text-primary-light font-bold"
-                  }`}
-                >
-                  {nav.name}
-                </a>
-              </Link>
-            ))}
-          </Transition>
-        ) : null}
-      </>
+        </div>
+      </header>
       <main
         className={`flex-grow min-h-non-nav ${color} ${className ? className : ""}`}
         ref={scrollRef}
