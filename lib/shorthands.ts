@@ -49,3 +49,24 @@ export const makeCancelable = <T>(promise: Promise<T>): CancelablePromise<T> => 
     },
   };
 };
+
+export const formatUUID = (uuid: string): string => {
+  const raw = uuid.replace(/\-/g, "");
+
+  if (raw.length !== 32) return "Invalid UUID";
+  let result = "";
+  for (let i = 0; i < raw.length; i++) {
+    switch (i) {
+      case 8:
+      case 12:
+      case 16:
+      case 20:
+      case 32:
+        result += "-";
+    }
+
+    result += raw[i];
+  }
+
+  return result;
+};
