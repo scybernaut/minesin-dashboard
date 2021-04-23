@@ -6,12 +6,11 @@ import MembersList from "../../components/MembersList";
 import ResourceBars from "../../components/ResourceBars";
 
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Dashboard() {
   const router = useRouter();
 
-  const [api, setAPI] = useState<MinesinAPI>();
   const [members, setMembers] = useState<MembersArray>();
   const [cpu, setCPU] = useState<number>();
   const [ram, setRAM] = useState<number>();
@@ -20,25 +19,43 @@ export default function Dashboard() {
     if (reason.isCanceled !== true) throw reason;
   };
 
-  useEffect(() => {
-    const api = new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true);
-    setAPI(api);
-    const promises = {
+  const promisesRef = useRef<ReturnType<typeof getPromises>>();
+
+  const getPromises = (api: MinesinAPI) => {
+    return {
       cpu: api.getCPUUsage(),
       ram: api.getRAMUsage(),
       members: api.getMembers(),
     };
+  };
 
-    promises.cpu.promise.then(setCPU);
-    promises.ram.promise.then(setRAM);
-    promises.members.promise.then(setMembers);
+  useEffect(() => {
+    const api = new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true);
 
-    Object.values(promises).forEach((promise) => promise.promise.catch(ignoreCanceled));
+    const retrieveData = async () => {
+      const promises = getPromises(api);
 
-    return () => Object.values(promises).forEach((promise) => promise?.cancel());
+      const ongoing = [
+        promises.cpu.promise.then(setCPU),
+        promises.ram.promise.then(setRAM),
+        promises.members.promise.then(setMembers),
+      ];
+
+      Object.values(promises).forEach((promise) => promise.promise.catch(ignoreCanceled));
+
+      promisesRef.current = promises;
+
+      return ongoing;
+    };
+
+    retrieveData();
+    const interval = setInterval(retrieveData, 15000);
+
+    return () => {
+      clearInterval(interval);
+      Object.values(promisesRef.current ?? {}).forEach((promise) => promise.cancel());
+    };
   }, []);
-
-  // TODO: periodically request new data from API
 
   return (
     <Layout

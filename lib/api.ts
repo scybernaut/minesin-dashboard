@@ -123,10 +123,6 @@ export default class MinesinAPI {
         .get<MembersArray>("/members")
         .then(
           (res): MembersArray => {
-            res.data[1].online = true;
-            res.data[1].onlineFor = 200000;
-            res.data[1].location = "survival 2020";
-
             return res.data.sort((l, r) => {
               if (!l.online && !r.online)
                 return new Date(r.lastseen ?? 0).valueOf() - new Date(l.lastseen ?? 0).valueOf();
