@@ -22,7 +22,15 @@ abbr[title].abbr-no-underline {
   text-decoration: none;
 }
 
+* {
+  font-feature-settings: "ss03", "case";
+}
+
 img.pixelated {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+.number-alt {
+  font-feature-settings: "ss01";
 }
