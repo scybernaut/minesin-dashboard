@@ -6,9 +6,10 @@ export const loggedOutReasons = {
   token_invalid: "Your token is invalid.",
   token_expired: "Your session has expired.",
   logout: "Logged out successfully.",
+  error: "An unexpected error occurred, try signing in again.",
 };
 
-export type LoggedOutReasonCode = keyof typeof loggedOutReasons | null;
+export type LoggedOutReasonCode = keyof typeof loggedOutReasons;
 
 export enum logoutOptions {
   canRedirect = 0b01,
@@ -17,7 +18,7 @@ export enum logoutOptions {
 
 export const routeLogout = (
   router: NextRouter,
-  reasonCode?: LoggedOutReasonCode | null,
+  reasonCode?: LoggedOutReasonCode,
   optionsBitmask?: number
 ) => {
   const params = new URLSearchParams();
@@ -32,15 +33,15 @@ interface CancelablePromise<T> {
   cancel: () => void;
 }
 
-export const makeCancelable = <T>(promise: Promise<T>): CancelablePromise<T> => {
+export const makeResolvingCancelable = <T>(promise: Promise<T>): CancelablePromise<T | void> => {
   let hasCanceled_ = false;
 
-  const wrappedPromise = new Promise<T>((resolve, reject) => {
+  const wrappedPromise = new Promise<T | void>((resolve, reject) =>
     promise.then(
-      (val) => (hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)),
-      (error) => (hasCanceled_ ? reject({ isCanceled: true }) : reject(error))
-    );
-  });
+      (val) => (hasCanceled_ ? resolve() : resolve(val)),
+      (error) => (hasCanceled_ ? resolve() : reject(error))
+    )
+  );
 
   return {
     promise: wrappedPromise,
