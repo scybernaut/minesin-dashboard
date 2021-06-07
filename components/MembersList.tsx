@@ -64,6 +64,11 @@ const logMap = (
   return result;
 };
 
+const humanDuration = (ISODate: string | undefined | null) => {
+  if (ISODate == undefined) return "";
+  return " for " + dayjs(ISODate).toNow(true);
+};
+
 const MAX_DAYS = 3;
 
 const MembersList: FC<MembersListProps> = ({ members, className }) => {
@@ -113,7 +118,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
               opacity: member.online
                 ? 1
                 : logMap(
-                    Math.min(now.diff(dayjs(member.lastseen ?? 0), "days", true), MAX_DAYS) + 1,
+                    Math.min(now.diff(dayjs(member.offlineSince ?? ""), "days", true), MAX_DAYS) +
+                      1,
                     1,
                     MAX_DAYS + 1,
                     0.9,
@@ -123,8 +129,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
           >
             <img
               src={member.skinURL}
-              className="h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm"
-            ></img>
+              className="h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated"
+            />
             <p className="ml-2 flex-grow">
               <p className="font-semibold">{member.ign}</p>
               <div className="flex justify-between items-center">
@@ -137,8 +143,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                     } transform -translate-y-0.5`}
                   />
                   {member.online
-                    ? " Online for " + dayjs.duration(member.onlineFor).humanize(false)
-                    : " Offline for " + dayjs(member.lastseen ?? 0).toNow(true)}
+                    ? " Online" + humanDuration(member.onlineSince)
+                    : " Offline" + humanDuration(member.offlineSince)}
                 </div>
 
                 {member.online ? (
