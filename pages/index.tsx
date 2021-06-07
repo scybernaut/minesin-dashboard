@@ -32,7 +32,7 @@ export default function Home() {
           .
         </p>
         <Button
-          href={hasToken ? "/dashboard" : "/dashboard/auth"}
+          href={hasToken ? "/dashboard" : "/dashboard/login"}
           iconPath={mdiChevronRight}
           xPadding="pr-1.5 pl-3.5"
           padIconLeft="ml-0"

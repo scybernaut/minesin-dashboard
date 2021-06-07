@@ -25,7 +25,7 @@ export const routeLogout = (
   if (reasonCode) params.append("reason", reasonCode);
   if (optionsBitmask) params.append("options", optionsBitmask.toString());
   const paramsWithQuery = params ? "?" + params : "";
-  router.replace("/dashboard/auth" + paramsWithQuery);
+  router.replace("/dashboard/login" + paramsWithQuery);
 };
 
 interface CancelablePromise<T> {
