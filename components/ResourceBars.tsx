@@ -37,8 +37,16 @@ const ResourceBar: FC<ResourceBarProps> = ({ api }) => {
     const cpuUsagePromise = api.getCPUUsage();
     const ramUsagePromise = api.getRAMUsage();
 
-    cpuUsagePromise.promise.then((usage) => setCPUUsage(usage ?? 0));
-    ramUsagePromise.promise.then((usage) => setRAMUsage(usage ?? 0));
+    cpuUsagePromise.promise
+      .then((usage) => setCPUUsage(usage ?? 0))
+      .catch((reason) => {
+        if (reason.isCancelled !== true) throw reason;
+      });
+    ramUsagePromise.promise
+      .then((usage) => setRAMUsage(usage ?? 0))
+      .catch((reason) => {
+        if (reason.isCancelled !== true) throw reason;
+      });
 
     return () => {
       cpuUsagePromise.cancel();
