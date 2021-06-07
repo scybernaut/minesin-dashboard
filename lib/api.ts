@@ -93,7 +93,8 @@ export default class MinesinAPI {
     if (checkToken) {
       const status = checkTokenStatus(token);
       if (status !== tokenStatus.Valid) {
-        routeLogout(this.router, status || undefined, logoutOptions.removeToken);
+        const options = status !== tokenStatus.Empty ? logoutOptions.removeToken : undefined;
+        routeLogout(this.router, status || undefined, options);
       }
     }
 
