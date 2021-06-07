@@ -79,7 +79,9 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                 className={l1`transform transition ease-in-out duration-200
                ${showUUID ? "translate-x-6" : "translate-x-1"}
                inline-block w-4 h-4 transform bg-white rounded-full`}
-              />
+              >
+                <span className="hidden">Toggle</span>
+              </span>
             </Switch>
           </Switch.Group>
         </div>
@@ -93,14 +95,13 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
               <img
                 src={member.skinURL}
                 alt={member.ign + "'s Minecraft skin"}
-                width="2.5rem"
-                height="2.5rem"
+                width="64"
                 className={
                   "h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated" + opacityClass
                 }
               />
               <div className="ml-2 flex-grow">
-                <p className={"font-semibold leading-none mb-1" + opacityClass}>{member.ign}</p>
+                <h4 className={"font-semibold leading-none mb-1" + opacityClass}>{member.ign}</h4>
                 <div className={"flex justify-between items-center" + opacityClass}>
                   <p className={`flex-shrink-0 ${dot} ${member.online ? dot__active : ""}`}>
                     {member.online
@@ -109,21 +110,21 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                   </p>
 
                   {member.online ? (
-                    <span className="flex-grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
+                    <p className="flex-grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
                       {(member.location ?? "").toUpperCase()}
-                    </span>
+                    </p>
                   ) : null}
                 </div>
                 <p
                   className={
-                    "text-sm font-mono text-gray-400 dark:text-gray-400 break-all" +
+                    "text-sm text-gray-400 dark:text-gray-400 break-all" +
                     (member.online ? "" : " opacity-90") +
                     // Not using "display: none" in order to maintain width
                     (showUUID ? "" : " h-0 overflow-hidden")
                   }
                   aria-hidden={!showUUID}
                 >
-                  {formatUUID(member.uuid)}
+                  <code>{formatUUID(member.uuid)}</code>
                 </p>
               </div>
             </li>

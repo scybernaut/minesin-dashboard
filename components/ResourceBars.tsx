@@ -39,13 +39,13 @@ const ResourceBar: FC<ResourceBarProps> = ({ usages, className }) => {
     >
       <h2 className="text-2xl font-bold mb-4">Resources</h2>
       <div className="flex justify-between items-end">
-        <span className="leading-relaxed font-semibold">CPU Usage</span>
+        <h3 className="leading-relaxed font-semibold">CPU Usage</h3>
         <span className="leading-snug number-alt">{usages.cpu.toFixed(2)}%</span>
       </div>
       <ProgressBar color={cpuColor.bg} progress={usages.cpu} />
 
       <div className="flex justify-between items-end mt-4">
-        <span className="leading-relaxed font-semibold">RAM Usage</span>
+        <h3 className="leading-relaxed font-semibold">RAM Usage</h3>
         <span className="leading-snug number-alt">{usages.ram.toFixed(2)}%</span>
       </div>
       <ProgressBar color={ramColor.bg} progress={usages.ram} />
