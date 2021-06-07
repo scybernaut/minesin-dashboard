@@ -108,14 +108,13 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                     <Icon
                       path={mdiCircle}
                       size="0.8em"
-                      className={`inline ${
+                      className={`inline mr-1 ${
                         member.online ? "text-green-500" : "text-gray-500 dark:text-gray-400"
                       } transform -translate-y-0.5`}
-                      role="presentation"
                     />
                     {member.online
-                      ? " Online" + humanDuration(member.onlineSince)
-                      : " Offline" + humanDuration(member.offlineSince)}
+                      ? "Online" + humanDuration(member.onlineSince)
+                      : "Offline" + humanDuration(member.offlineSince)}
                   </div>
 
                   {member.online ? (
