@@ -21,6 +21,7 @@ export default function Home() {
       actions={homeActions}
       color="bg-gray-900"
       className="text-white flex flex-col justify-center"
+      noToggle
     >
       <div className="flex flex-col justify-center items-center m-4 gap-y-10">
         <h1 className="text-3xl font-extrabold mb-2">Hello there!</h1>

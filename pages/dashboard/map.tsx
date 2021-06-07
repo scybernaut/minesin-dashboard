@@ -6,7 +6,13 @@ export default function Map() {
   const router = useRouter();
 
   return (
-    <Layout actions={dashboardActions(router)} color="bg-gray-900">
+    <Layout
+      actions={dashboardActions(router)}
+      color="bg-gray-900"
+      always="transparent"
+      fullWidth
+      noToggle
+    >
       <iframe
         src="https://omsinkrissada.sytes.net/api/minecraft/map/"
         title="Minecraft world map"
