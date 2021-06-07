@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
+import { RefObject } from "react";
 import { oneLine as l1 } from "common-tags";
 import _uniqueId from "lodash/uniqueId";
 
