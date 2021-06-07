@@ -39,7 +39,7 @@ interface MembersListProps {
 
 const MembersList: FC<MembersListProps> = ({ members }) => {
   return (
-    <div className="bg-white text-black p-4 rounded-md max-w-md">
+    <div className="bg-white text-black p-4 rounded-md">
       <h2 className="font-bold text-2xl mb-3">Members</h2>
       <ol className="flex flex-col gap-5">
         {members?.map((member) => (
