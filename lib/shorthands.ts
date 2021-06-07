@@ -1,14 +1,26 @@
+import { once } from "lodash";
 import { NextRouter } from "next/router";
 
 export const focusRing = "focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-70";
 
 export const loggedOutReasons = {
-  invalid_token: "Your token is invalid.",
+  token_invalid: "Your token is invalid.",
   token_expired: "Your session has expired.",
 };
 
-export type LoggedOutReasonCode = keyof typeof loggedOutReasons;
+export type LoggedOutReasonCode = keyof typeof loggedOutReasons | null;
 
-export const routeLogout = (router: NextRouter, reasonCode?: LoggedOutReasonCode) => {
-  router.replace(`/dashboard/auth${reasonCode ? "?reason=" + encodeURIComponent(reasonCode) : ""}`);
-};
+export enum logoutOptions {
+  canRedirect = 0b01,
+  removeToken = 0b10,
+}
+
+export const routeLogout = once(
+  (router: NextRouter, reasonCode?: LoggedOutReasonCode | null, optionsBitmask?: number) => {
+    const params = new URLSearchParams();
+    if (reasonCode) params.append("reason", reasonCode);
+    if (optionsBitmask) params.append("options", optionsBitmask.toString());
+    const paramsWithQuery = params ? "?" + params : "";
+    router.replace("/dashboard/auth" + paramsWithQuery);
+  }
+);

@@ -7,21 +7,13 @@ import { Transition } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import { authenticate, checkTokenValidity, tokenStatus } from "../../lib/api";
-import { loggedOutReasons, LoggedOutReasonCode } from "../../lib/shorthands";
+import { authenticate, checkTokenStatus, tokenStatus } from "../../lib/api";
+import { loggedOutReasons, LoggedOutReasonCode, logoutOptions } from "../../lib/shorthands";
 
 import { oneLine as l1 } from "common-tags";
 
 export default function AuthPage() {
   const router = useRouter();
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token)
-      checkTokenValidity(token).then((validity) => {
-        if (validity === tokenStatus.Valid) router.replace("/dashboard");
-      });
-  }, []);
 
   const [errorText, setErrorText] = useState("");
   const [errorParity, setErrorParity] = useState(false);
@@ -30,19 +22,32 @@ export default function AuthPage() {
   const [reason, setReason] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (
-      typeof router.query.reason === "string" &&
-      Object.keys(loggedOutReasons).includes(router.query.reason)
-    ) {
-      const reasonCode = router.query.reason as LoggedOutReasonCode;
-      setReason(loggedOutReasons[reasonCode]);
+    if (!router.isReady) return;
+    const reasonCode = router.query.reason;
+    const optionsMask =
+      typeof router.query.options === "string" ? parseInt(router.query.options) : NaN;
+
+    if (typeof reasonCode === "string" && Object.keys(loggedOutReasons).includes(reasonCode)) {
+      // Should be safe to cast type as the type is already checked in the above statement
+      const safeReasonCode = reasonCode as Exclude<LoggedOutReasonCode, null>;
+
+      setReason(loggedOutReasons[safeReasonCode]);
       setShowReason(true);
-    } else {
-      setShowReason(false);
+    }
+
+    if (optionsMask != NaN) {
+      if (logoutOptions.removeToken & optionsMask) {
+        localStorage.removeItem("accessToken");
+      }
+
+      if (logoutOptions.canRedirect & optionsMask) {
+        const token = localStorage.getItem("accessToken");
+        if (checkTokenStatus(token) === tokenStatus.Valid) router.replace("/dashboard");
+      }
     }
 
     setTimeout(() => setShowReason(false), 5000);
-  }, [router.query.reason]);
+  }, [router.isReady]);
 
   const showError = (errorText: string) => {
     setErrorText(errorText);

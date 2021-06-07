@@ -6,15 +6,14 @@ import Button from "../components/Button";
 
 import { mdiChevronRight } from "@mdi/js";
 
-import { checkTokenValidity, tokenStatus } from "../lib/api";
+import { checkTokenStatus, tokenStatus } from "../lib/api";
 
 export default function Home() {
-  const [isTokenValid, setTokenValid] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token)
-      checkTokenValidity(token).then((validity) => setTokenValid(validity === tokenStatus.Valid));
+    setHasToken(checkTokenStatus(token) !== tokenStatus.Empty);
   }, []);
 
   return (
@@ -29,7 +28,7 @@ export default function Home() {
           .
         </p>
         <Button
-          href={isTokenValid ? "/dashboard" : "/dashboard/auth"}
+          href={hasToken ? "/dashboard" : "/dashboard/auth"}
           iconPath={mdiChevronRight}
           xPadding="pr-1.5 pl-3.5"
           padIconLeft="ml-0"
