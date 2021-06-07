@@ -1,0 +1,51 @@
+const colors = require("tailwindcss/colors");
+
+module.exports = {
+  purge: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  darkMode: false, // or 'media' or 'class'
+  theme: {
+    fontFamily: {
+      sans: [
+        "Inter",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Helvetica Neue",
+        "Roboto",
+        "sans-serif",
+      ],
+      minecraft: [
+        "Minecrafter",
+        "Inter",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Helvetica Neue",
+        "Roboto",
+        "sans-serif",
+      ],
+      mono: ["Fira Mono", "Roboto Mono", "monospace"],
+    },
+    extend: {
+      minHeight: {
+        12: "3rem",
+      },
+      colors: {
+        primary: colors.blue["800"],
+        "primary-dark": colors.blue["800"],
+        "primary-light": colors.blue["600"],
+        "on-primary": colors.white,
+        accent: colors.orange["500"],
+        "on-accent": colors.white,
+      },
+      backdropBrightness: {
+        175: "1.75",
+      },
+      minWidth: {
+        32: "8rem",
+      },
+    },
+  },
+  variants: {
+    extend: {},
+  },
+  plugins: [],
+};
