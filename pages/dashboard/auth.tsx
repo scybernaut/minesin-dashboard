@@ -46,7 +46,8 @@ export default function AuthPage() {
       }
     }
 
-    setTimeout(() => setShowReason(false), 5000);
+    const timeout = setTimeout(() => setShowReason(false), 5000);
+    return () => clearTimeout(timeout);
   }, [router.isReady]);
 
   const showError = (errorText: string) => {
