@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 
-import { fetchMembers, MembersArray, apiErrorHandler } from "../lib/api";
+import MinesinAPI, { MembersArray } from "../lib/api";
 
 import Icon from "@mdi/react";
 import { mdiCircle } from "@mdi/js";
@@ -9,7 +9,6 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
 import updateLocale from "dayjs/plugin/updateLocale";
-import { LoggedOutReasonCodes } from "../lib/shorthands";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -35,19 +34,15 @@ dayjs.updateLocale("en", {
 });
 
 interface MembersListProps {
-  logout?: (reason?: LoggedOutReasonCodes) => void;
+  api: MinesinAPI | undefined;
 }
 
-const MembersList: FC<MembersListProps> = ({ logout }) => {
+const MembersList: FC<MembersListProps> = ({ api }) => {
   const [members, setMembers] = useState<MembersArray>();
 
   useEffect(() => {
-    fetchMembers(localStorage.getItem("accessToken") ?? "")
-      .then((data) => {
-        setMembers(data);
-      })
-      .catch((err) => apiErrorHandler(err, logout));
-  }, []);
+    if (api !== undefined) api.getMembers().then((members) => setMembers(members ?? []));
+  }, [api]);
 
   return (
     <div className="bg-white text-black p-4 rounded-md max-w-md">

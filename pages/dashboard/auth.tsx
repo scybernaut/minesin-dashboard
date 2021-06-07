@@ -7,13 +7,21 @@ import { Transition } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import { authenticate } from "../../lib/api";
-import { loggedOutReasons, LoggedOutReasonCodes } from "../../lib/shorthands";
+import { authenticate, checkTokenValidity, tokenStatus } from "../../lib/api";
+import { loggedOutReasons, LoggedOutReasonCode } from "../../lib/shorthands";
 
 import { oneLine as l1 } from "common-tags";
 
 export default function AuthPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token)
+      checkTokenValidity(token).then((validity) => {
+        if (validity === tokenStatus.Valid) router.replace("/dashboard");
+      });
+  }, []);
 
   const [errorText, setErrorText] = useState("");
   const [errorParity, setErrorParity] = useState(false);
@@ -26,7 +34,7 @@ export default function AuthPage() {
       typeof router.query.reason === "string" &&
       Object.keys(loggedOutReasons).includes(router.query.reason)
     ) {
-      const reasonCode = router.query.reason as LoggedOutReasonCodes;
+      const reasonCode = router.query.reason as LoggedOutReasonCode;
       setReason(loggedOutReasons[reasonCode]);
       setShowReason(true);
     } else {
