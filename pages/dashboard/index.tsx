@@ -13,10 +13,10 @@ export default function Dashboard() {
 
   const [api, setAPI] = useState<MinesinAPI | undefined>(undefined);
 
-  useEffect(() => {
-    setAPI(new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true));
-    // console.log(api !== undefined);
-  }, []);
+  useEffect(
+    () => setAPI(new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true)),
+    []
+  );
 
   return (
     <Layout

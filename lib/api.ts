@@ -1,6 +1,8 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
 import { NextRouter } from "next/router";
-import { LoggedOutReasonCode, routeLogout } from "./shorthands";
+import { LoggedOutReasonCode, logoutOptions, routeLogout } from "./shorthands";
+
+import dayjs from "dayjs";
 
 axios.defaults.baseURL = "https://omsinkrissada.sytes.net/api/minecraft/";
 
@@ -20,102 +22,96 @@ export type ResourceUsage = {
 };
 
 export enum tokenStatus {
-  Valid,
-  Invalid,
-  Expired,
+  // Set to truthy value to avoid bugs with || operator
+  Valid = 1,
+
+  // Workaround: use with `|| undefined` to resolve value to undefined
+  // because Typescript does not allow setting "computed" undefined or null as enum value
+  Empty = "",
+
+  Invalid = "token_invalid",
+  Expired = "token_expired",
 }
 
 export const authenticate = async (password: string) => {
   return axios.post("/login", { passphrase: password }).then((res) => res.data.accessToken);
 };
 
-// There seems to be no standard way to check the validity of tokens,
-// so this function performs a simple GET request the endpoint
-// that would return the smallest data
-export const checkTokenValidity = async (token: string) => {
-  return new Promise<tokenStatus>((resolve) => {
-    axios
-      .get<ResourceUsage>("/cpuusage", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then(() => {
-        resolve(tokenStatus.Valid);
-      })
-      .catch(reqErrorToTokenStatus);
-  });
+type MinesinAPITokenPayload = {
+  version: string;
+  user: string;
+  iat: number;
+  exp: number;
 };
 
-/**
- * Converts Axios request error to token status
- * @param err the error from Axios
- * @returns the corresponding token status, or undefined
- * if there is no corresponding token status
- * // throws {Error} if the response code is not recongnized as any token status
- */
+type MinesinAPIError = {
+  reason: string;
+  code?: number; // TODO: Currently, there is a bug in the API that causes the API to not return `code`
+};
 
-const reqErrorToTokenStatus = (err: AxiosError) => {
-  switch (err.response?.status) {
-    case 401:
-      return tokenStatus.Expired;
-    case 403:
-      return tokenStatus.Invalid;
-    default:
-      // throw Error();
-      return undefined;
+export const checkTokenStatus = (token: string | null | undefined): tokenStatus => {
+  if (!token) return tokenStatus.Empty;
+  const [encodedHeader, encodedPayload] = token.split(".");
+
+  let payload: MinesinAPITokenPayload;
+  try {
+    JSON.parse(atob(encodedHeader));
+    payload = JSON.parse(atob(encodedPayload)) as MinesinAPITokenPayload;
+  } catch (_) {
+    return tokenStatus.Invalid;
   }
+
+  const expirationTime = dayjs.unix(payload.exp);
+
+  return dayjs().valueOf() < expirationTime.valueOf() ? tokenStatus.Valid : tokenStatus.Expired;
 };
 
-/**
- * Converts token status to logout reason code
- * @param status the token status
- * @returns the corresponding logout reason code, or undefined
- * if there is no corresponding reason code
- */
-
-const tokenStatusToLogoutReason = (status: tokenStatus): LoggedOutReasonCode | undefined => {
-  switch (status) {
-    case tokenStatus.Expired:
+const errorToLogoutReason = (
+  err: AxiosError<MinesinAPIError>
+): LoggedOutReasonCode | null | undefined => {
+  switch (err.response?.data.code) {
+    case 1001:
+      return null;
+    case 1002:
       return "token_expired";
-    case tokenStatus.Invalid:
-      return "invalid_token";
+    case 1003:
+      return "token_invalid";
   }
+
+  return undefined;
 };
 
 export default class MinesinAPI {
   token: string;
   router: NextRouter;
-  authHeader: {
-    Authorization: string;
-  };
+  instance: AxiosInstance;
 
   constructor(token: string, router: NextRouter, checkToken = false) {
     this.token = token;
     this.router = router;
-    this.authHeader = {
-      Authorization: "Bearer " + token,
-    };
 
-    if (checkToken)
-      checkTokenValidity(token).then((validity) => {
-        if (validity !== tokenStatus.Valid)
-          routeLogout(this.router, tokenStatusToLogoutReason(validity));
-      });
+    if (checkToken) {
+      const status = checkTokenStatus(token);
+      if (status !== tokenStatus.Valid) {
+        routeLogout(this.router, status || undefined, logoutOptions.removeToken);
+      }
+    }
+
+    this.instance = axios.create({
+      baseURL: "https://omsinkrissada.sytes.net/api/minecraft/",
+      headers: { Authorization: "Bearer " + token },
+    });
   }
 
-  #errorHandler = (err: AxiosError) => {
-    const status = reqErrorToTokenStatus(err);
-    if (status !== undefined) routeLogout(this.router, tokenStatusToLogoutReason(status));
+  #errorHandler = (err: AxiosError<MinesinAPIError>) => {
+    const logoutReason = errorToLogoutReason(err);
+    routeLogout(this.router, logoutReason, logoutOptions.removeToken);
     return undefined;
-    // throw err;
   };
 
   getMembers = async () => {
-    return axios
-      .get<MembersArray>("/members", {
-        headers: this.authHeader,
-      })
+    return this.instance
+      .get<MembersArray>("/members")
       .then(
         (res): MembersArray => {
           res.data[1].online = true;
@@ -134,10 +130,8 @@ export default class MinesinAPI {
   };
 
   getCPUUsage = async () => {
-    return axios
-      .get<ResourceUsage>("/cpuusage", {
-        headers: this.authHeader,
-      })
+    return this.instance
+      .get<ResourceUsage>("/cpuusage")
       .then((res) => {
         return res.data.percent;
       })
@@ -145,10 +139,8 @@ export default class MinesinAPI {
   };
 
   getRAMUsage = async () => {
-    return axios
-      .get<ResourceUsage>("/memusage", {
-        headers: this.authHeader,
-      })
+    return this.instance
+      .get<ResourceUsage>("/memusage")
       .then((res) => {
         return res.data.percent;
       })
