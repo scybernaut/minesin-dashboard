@@ -19,9 +19,6 @@ export default function Home() {
       <div className="flex flex-col justify-center items-center m-4 gap-y-10 transform -translate-y-8">
         <h1 className="text-3xl font-extrabold mb-2">Hello there!</h1>
         <p className="text-lg text-center leading-relaxed">
-          {/* <abbr className="abbr-no-underline font-bold" title="A MINESIN Dashboard">
-            Minesin
-          </abbr> */}
           Welcome to the next version of{" "}
           <a className="underline font-medium" href="https://omsinkrissada.sytes.net">
             MINESIN&nbsp;dashboard

@@ -27,6 +27,7 @@ export default function Dashboard() {
       className="text-white m-4 grid grid-cols-1 auto-rows-min gap-4"
     >
       <MembersList logout={authRedirect}></MembersList>
+      <ResourceBars logout={authRedirect}></ResourceBars>
     </Layout>
   );
 }
