@@ -1,7 +1,6 @@
 import { FC, useState, useEffect } from "react";
 
-import { LoggedOutReasonCodes } from "../lib/shorthands";
-import { getUsagePromises, apiErrorHandler } from "../lib/api";
+import MinesinAPI from "../lib/api";
 
 import Icon from "@mdi/react";
 import { mdiCircle } from "@mdi/js";
@@ -9,7 +8,7 @@ import { mdiCircle } from "@mdi/js";
 import ProgressBar from "./ProgressBar";
 
 interface ResourceBarProps {
-  logout?: (reason?: LoggedOutReasonCodes) => void;
+  api: MinesinAPI | undefined;
 }
 
 const colorBreakpoints = [
@@ -28,25 +27,16 @@ const getBreakpoint = (value: number) => {
   return colorBreakpoints[colorBreakpoints.length - 1];
 };
 
-const ResourceBar: FC<ResourceBarProps> = ({ logout }) => {
+const ResourceBar: FC<ResourceBarProps> = ({ api }) => {
   const [cpuUsage, setCPUUsage] = useState(0);
   const [ramUsage, setRAMUsage] = useState(0);
 
   useEffect(() => {
-    const promises = getUsagePromises(localStorage.getItem("accessToken") ?? "");
-
-    promises.cpu
-      .then((usage) => {
-        setCPUUsage(usage);
-      })
-      .catch((err) => apiErrorHandler(err, logout));
-
-    promises.ram
-      .then((usage) => {
-        setRAMUsage(usage);
-      })
-      .catch((err) => apiErrorHandler(err, logout));
-  }, []);
+    if (api !== undefined) {
+      api.getCPUUsage().then((usage) => setCPUUsage(usage ?? 0));
+      api.getRAMUsage().then((usage) => setRAMUsage(usage ?? 0));
+    }
+  }, [api]);
 
   const cpuColor = getBreakpoint(cpuUsage);
   const ramColor = getBreakpoint(ramUsage);
