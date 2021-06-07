@@ -18,8 +18,20 @@ import _once from "lodash/once";
 export default function AuthPage() {
   const router = useRouter();
 
-  const [errorText, setErrorText] = useState("");
-  const [errorParity, setErrorParity] = useState(false);
+  const [error, setError] = useState<{
+    text: string;
+    highlight: boolean;
+  }>({
+    text: "",
+    highlight: false,
+  });
+
+  const unhighlightError = () => {
+    setError({
+      ...error,
+      highlight: false,
+    });
+  };
 
   const [showReason, setShowReason] = useState(false);
   const [reason, setReason] = useState<string | undefined>(undefined);
@@ -69,8 +81,10 @@ export default function AuthPage() {
   }, [router.isReady]);
 
   const showError = (errorText: string) => {
-    setErrorText(errorText);
-    setErrorParity(!errorParity);
+    setError({
+      text: errorText,
+      highlight: true,
+    });
   };
 
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -110,7 +124,6 @@ export default function AuthPage() {
       .catch((err: AxiosError) => {
         switch (err.response?.status) {
           case 400:
-          case 403:
             showError("Invalid username or password");
             break;
           case 503:
@@ -144,23 +157,25 @@ export default function AuthPage() {
         {reason}
       </Transition>
       <form className="w-full max-w-80 sm:max-w-96 lg:max-w-108 p-4">
-        <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">Hello, friends!</h2>
         <InputField
           label="Minecraft Username"
           id="username-field"
           placeholder="Username"
-          errorText={errorText}
-          errorParity={errorParity}
           inputRef={usernameRef}
-          noErrorText
+          error={{
+            ...error,
+            text: "",
+          }}
+          onChange={unhighlightError}
         />
         <InputField
           label="Password"
           id="password-field"
           type="password"
-          errorText={errorText}
-          errorParity={errorParity}
           inputRef={passwordRef}
+          error={error}
+          onChange={unhighlightError}
           onEnter={login}
         />
         <input
@@ -168,6 +183,7 @@ export default function AuthPage() {
           type="checkbox"
           checked={remember}
           onChange={(e) => setRemember(e.target.checked)}
+          className="mt-2"
         />
         <label htmlFor="remember-checkbox" className="m-2">
           Remember me

@@ -1,25 +1,26 @@
-import { Ref, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { oneLine as l1 } from "common-tags";
 import _uniqueId from "lodash/uniqueId";
 
 export type PasswordFieldProps = {
   label: string;
   placeholder?: string;
-  errorText?: string;
   inputProps?: Record<string, any>;
-  errorParity?: boolean;
   onEnter?: (e?: { preventDefault: () => any }) => void;
   type?: string;
   id?: string;
-  noErrorText?: boolean;
-  inputRef?: Ref<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement>;
+  error?: {
+    text: string;
+    highlight: boolean;
+  };
+  onChange?: () => void;
 };
 
 const InputField: React.FC<PasswordFieldProps> = (props) => {
-  const [highlightError, setHighlightError] = useState<boolean>();
-  useEffect(() => setHighlightError(!!props.errorText), [props.errorParity]);
-
   const type = props.type ?? "text";
+
+  console.log(props.error);
 
   const inputProps: Record<string, string> = {};
 
@@ -30,24 +31,24 @@ const InputField: React.FC<PasswordFieldProps> = (props) => {
   const id = props.id ?? _uniqueId("field-");
 
   return (
-    <div className="mb-4">
+    <div>
       <label htmlFor={id} className="block font-semibold text-xl mb-2">
         {props.label}
       </label>
       <input
         className={l1`w-full py-2 px-4 rounded bg-gray-700 focus:outline-none focus:ring 
-        ${highlightError ? "ring ring-red-500" : "focus:ring-primary-light"} 
+        ${props.error?.highlight ? "ring ring-red-500" : "focus:ring-primary-light"} 
         focus:ring-opacity-100`}
         type={type}
         id={id}
         ref={props.inputRef}
         {...inputProps}
-        onChange={() => setHighlightError(false)}
+        onChange={props.onChange}
         onKeyPress={(event) => event.key === "Enter" && props.onEnter?.(event)}
       />
-      {!props.noErrorText && highlightError && (
-        <p className="text-red-500 font-medium mt-1">{props.errorText}</p>
-      )}
+      <p className="h-4 text-red-500 font-medium my-1 mb-2">
+        {props.error?.text && props.error?.highlight ? props.error.text : ""}
+      </p>
     </div>
   );
 };
