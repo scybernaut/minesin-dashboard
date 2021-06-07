@@ -11,6 +11,7 @@ import { authenticate, checkTokenStatus, tokenStatus } from "../../lib/api";
 import { loggedOutReasons, LoggedOutReasonCode, logoutOptions } from "../../lib/shorthands";
 
 import { oneLine as l1 } from "common-tags";
+import { AxiosError } from "axios";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -67,8 +68,12 @@ export default function AuthPage() {
         localStorage.setItem("accessToken", accessToken);
         router.replace("/dashboard");
       })
-      .catch(() => {
-        showError("Incorrect password");
+      .catch((err: AxiosError) => {
+        if (err.response?.status === 403) showError("Incorrect password");
+        else {
+          showError("An error occured while trying to sign in");
+          console.error(err);
+        }
       });
   };
 

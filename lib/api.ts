@@ -1,6 +1,11 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { NextRouter } from "next/router";
-import { LoggedOutReasonCode, logoutOptions, makeCancelable, routeLogout } from "./shorthands";
+import {
+  LoggedOutReasonCode,
+  logoutOptions,
+  makeResolvingCancelable,
+  routeLogout,
+} from "./shorthands";
 
 import dayjs from "dayjs";
 import { once } from "lodash";
@@ -9,11 +14,11 @@ axios.defaults.baseURL = "https://omsinkrissada.sytes.net/api/minecraft/";
 
 export type MembersArray = Array<{
   ign: string;
-  lastseen: string | null;
   location: string | null;
   nickname: string;
   online: boolean;
-  onlineFor: number; // in milliseconds
+  onlineSince: string | null;
+  offlineSince: string | null;
   skinURL: string;
   uuid: string;
 }>;
@@ -67,19 +72,15 @@ export const checkTokenStatus = (token: string | null | undefined): tokenStatus 
   return dayjs().valueOf() < expirationTime.valueOf() ? tokenStatus.Valid : tokenStatus.Expired;
 };
 
-const errorToLogoutReason = (
-  err: AxiosError<MinesinAPIError>
-): LoggedOutReasonCode | null | undefined => {
+const errorToLogoutReason = (err: AxiosError<MinesinAPIError>): LoggedOutReasonCode => {
   switch (err.response?.data.code) {
-    case 1001:
-      return null;
     case 1002:
       return "token_expired";
     case 1003:
       return "token_invalid";
   }
 
-  return undefined;
+  return "error";
 };
 
 export default class MinesinAPI {
@@ -88,7 +89,7 @@ export default class MinesinAPI {
   instance: AxiosInstance;
 
   #logout = once(
-    (router: NextRouter, reasonCode?: LoggedOutReasonCode | null, optionsBitmask?: number) => {
+    (router: NextRouter, reasonCode?: LoggedOutReasonCode, optionsBitmask?: number) => {
       routeLogout(router, reasonCode, optionsBitmask);
     }
   );
@@ -118,16 +119,18 @@ export default class MinesinAPI {
   };
 
   getMembers = () => {
-    return makeCancelable(
+    return makeResolvingCancelable(
       this.instance
         .get<MembersArray>("/members")
         .then(
           (res): MembersArray => {
             return res.data.sort((l, r) => {
               if (!l.online && !r.online)
-                return new Date(r.lastseen ?? 0).valueOf() - new Date(l.lastseen ?? 0).valueOf();
+                return Date.parse(r.offlineSince ?? "") - Date.parse(l.offlineSince ?? "");
 
-              return r.onlineFor - l.onlineFor;
+              if (l.online !== r.online) return r.online ? 1 : -1;
+
+              return Date.parse(l.onlineSince ?? "") - Date.parse(r.onlineSince ?? "");
             });
           }
         )
@@ -136,7 +139,7 @@ export default class MinesinAPI {
   };
 
   getCPUUsage = () => {
-    return makeCancelable(
+    return makeResolvingCancelable(
       this.instance
         .get<ResourceUsage>("/cpuusage")
         .then((res) => {
@@ -147,7 +150,7 @@ export default class MinesinAPI {
   };
 
   getRAMUsage = () => {
-    return makeCancelable(
+    return makeResolvingCancelable(
       this.instance
         .get<ResourceUsage>("/memusage")
         .then((res) => {
