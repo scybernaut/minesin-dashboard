@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { NextRouter } from "next/router";
-import { LoggedOutReasonCode, logoutOptions, routeLogout } from "./shorthands";
+import { LoggedOutReasonCode, logoutOptions, makeCancelable, routeLogout } from "./shorthands";
 
 import dayjs from "dayjs";
 
@@ -109,41 +109,47 @@ export default class MinesinAPI {
     return undefined;
   };
 
-  getMembers = async () => {
-    return this.instance
-      .get<MembersArray>("/members")
-      .then(
-        (res): MembersArray => {
-          res.data[1].online = true;
-          res.data[1].onlineFor = 200000;
-          res.data[1].location = "survival 2020";
+  getMembers = () => {
+    return makeCancelable(
+      this.instance
+        .get<MembersArray>("/members")
+        .then(
+          (res): MembersArray => {
+            res.data[1].online = true;
+            res.data[1].onlineFor = 200000;
+            res.data[1].location = "survival 2020";
 
-          return res.data.sort((l, r) => {
-            if (!l.online && !r.online)
-              return new Date(r.lastseen ?? 0).valueOf() - new Date(l.lastseen ?? 0).valueOf();
+            return res.data.sort((l, r) => {
+              if (!l.online && !r.online)
+                return new Date(r.lastseen ?? 0).valueOf() - new Date(l.lastseen ?? 0).valueOf();
 
-            return r.onlineFor - l.onlineFor;
-          });
-        }
-      )
-      .catch(this.#errorHandler);
+              return r.onlineFor - l.onlineFor;
+            });
+          }
+        )
+        .catch(this.#errorHandler)
+    );
   };
 
-  getCPUUsage = async () => {
-    return this.instance
-      .get<ResourceUsage>("/cpuusage")
-      .then((res) => {
-        return res.data.percent;
-      })
-      .catch(this.#errorHandler);
+  getCPUUsage = () => {
+    return makeCancelable(
+      this.instance
+        .get<ResourceUsage>("/cpuusage")
+        .then((res) => {
+          return res.data.percent;
+        })
+        .catch(this.#errorHandler)
+    );
   };
 
-  getRAMUsage = async () => {
-    return this.instance
-      .get<ResourceUsage>("/memusage")
-      .then((res) => {
-        return res.data.percent;
-      })
-      .catch(this.#errorHandler);
+  getRAMUsage = () => {
+    return makeCancelable(
+      this.instance
+        .get<ResourceUsage>("/memusage")
+        .then((res) => {
+          return res.data.percent;
+        })
+        .catch(this.#errorHandler)
+    );
   };
 }
