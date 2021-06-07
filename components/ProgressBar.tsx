@@ -14,7 +14,7 @@ const ProgressBar: FC<ProgressBarProps> = (props) => {
   return (
     <div
       className={l1`w-full rounded-md
-      ${height} ${props.bgColor ?? "bg-gray-300"}
+      ${height} ${props.bgColor ?? "bg-gray-300 dark:bg-gray-600"}
       ${props.className ?? ""}`}
     >
       <div

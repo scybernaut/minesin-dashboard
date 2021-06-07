@@ -44,9 +44,9 @@ export default function Dashboard() {
     <Layout
       actions={dashboardActions(router)}
       color="bg-gray-900"
-      className="text-white p-4 mx-auto grid grid-cols-1 auto-rows-min gap-4 min-w-full"
+      className="text-white p-4 mx-auto grid grid-cols-1 sm:grid-cols-2 auto-rows-min gap-4 lg:gap-12 w-full max-w-5xl"
     >
-      <MembersList members={members ?? []} />
+      <MembersList className="row-span-2" members={members ?? []} />
       <ResourceBars
         usages={{
           cpu: cpu ?? 0,

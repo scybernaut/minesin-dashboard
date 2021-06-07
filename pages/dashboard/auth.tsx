@@ -92,7 +92,7 @@ export default function AuthPage() {
       >
         {reason}
       </Transition>
-      <div className="w-72 m-4">
+      <div className="w-72 sm:w-80 lg:w-96 m-4">
         <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
         <PasswordField
           label="Password"
