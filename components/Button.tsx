@@ -1,6 +1,8 @@
 import { FC, createElement } from "react";
 import Icon from "@mdi/react";
 
+import { icon24 } from "./Layout";
+
 import Link from "next/link";
 
 export type ButtonProps = {
@@ -36,7 +38,9 @@ const Button: FC<ButtonProps> = ({
     },
     <>
       <span>{children}</span>
-      {iconPath ? <Icon path={iconPath} className={`${padIconLeft ?? "ml-1.5"} h-6`} /> : null}
+      {iconPath ? (
+        <Icon path={iconPath} className={`${padIconLeft ?? "ml-1.5"} h-6`} {...icon24} />
+      ) : null}
     </>
   );
 

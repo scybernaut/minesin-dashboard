@@ -29,6 +29,16 @@ export type LayoutProps = {
   showToggle?: boolean;
 };
 
+export const icon24 = {
+  width: 24,
+  height: 24,
+};
+
+export const icon32 = {
+  width: 32,
+  height: 32,
+};
+
 const Layout: React.FC<LayoutProps> = ({
   color,
   children,
@@ -74,9 +84,9 @@ const Layout: React.FC<LayoutProps> = ({
     <div className={`flex flex-col w-full ${darkTheme ? "dark" : ""} ${color}`}>
       <header
         className={l1`w-full h-nav p-3
-              ${transparent ? (useSolid ? color : "transparent") : "bg-primary"}
-              transition-colors duration-300 ease-in text-on-primary flex-grow-0
-              top-0 left-0 right-0 sticky z-10 flex items-center justify-center`}
+                      ${transparent ? (useSolid ? color : "transparent") : "bg-primary"}
+                      transition-colors duration-300 ease-in text-on-primary flex-grow-0
+                      top-0 left-0 right-0 sticky z-10 flex items-center justify-center`}
       >
         <div
           className={l1`absolute top-0 w-full p-3 mx-auto
@@ -85,15 +95,16 @@ const Layout: React.FC<LayoutProps> = ({
           {actions.navs != null ? (
             <nav>
               <button
-                className={`flex items-center justify-center
-                top-3 left-3 w-8 h-8 rounded ${focusRing}
-                transition-opacity duration-100 ease-in-out`}
+                className={l1`flex items-center justify-center
+                              top-3 left-3 w-8 h-8 rounded ${focusRing}
+                              transition-opacity duration-100 ease-in-out`}
                 onClick={toggleNav}
               >
                 <Icon
                   path={navOpen ? mdiClose : mdiMenu}
                   title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
                   id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
+                  {...icon32}
                 />
               </button>
               <Transition
@@ -124,18 +135,21 @@ const Layout: React.FC<LayoutProps> = ({
               </Transition>
             </nav>
           ) : null}
-          <Link href="/">
-            <a
-              className={l1`text-2xl font-extrabold font-minecraft select-none
+          <h1
+            className={l1`select-none
                 absolute top-3 left-1/2 z-10
-                transform -translate-x-1/2
-                pl-1.5 pt-2 rounded
-                ${focusRing}`}
-              aria-label="Go to home page"
-            >
-              MINESIN
-            </a>
-          </Link>
+                transform -translate-x-1/2 translate-y-1.5`}
+          >
+            <Link href="/">
+              <a
+                className={l1`text-2xl font-extrabold font-minecraft
+                              rounded ${focusRing}`}
+                aria-label="Go to home page"
+              >
+                MINESIN
+              </a>
+            </Link>
+          </h1>
           <div className="flex items-center top-3 right-3 h-8 gap-1 sm:gap-4">
             {showToggle ? (
               <button
@@ -146,14 +160,15 @@ const Layout: React.FC<LayoutProps> = ({
                 }}
                 aria-label="Toggle dark theme"
               >
-                <p className="font-medium mr-1 hidden sm:block">
+                <span className="font-medium mr-1 hidden sm:block">
                   {`${darkTheme ? "Light" : "Dark"} theme`}
-                </p>
+                </span>
                 <Icon
                   path={darkTheme ? mdiBrightness7 : mdiBrightness3}
                   title="Toggle theme icon"
                   id="theme-toggle"
                   className="w-8 h-8 sm:h-6 sm:w-6"
+                  {...icon32}
                 />
               </button>
             ) : null}
@@ -165,14 +180,15 @@ const Layout: React.FC<LayoutProps> = ({
               >
                 {actions.buttonAction.name === "logout" && (
                   <>
-                    <p id="logout-text" className="font-medium mr-1 hidden sm:block">
+                    <span id="logout-text" className="font-medium mr-1 hidden sm:block">
                       Log out
-                    </p>
+                    </span>
                     <Icon
                       path={mdiLogoutVariant}
                       title="Log out icon"
                       id="logout-icon"
                       className="w-8 h-8 sm:h-6 sm:w-6"
+                      {...icon32}
                     />
                   </>
                 )}
