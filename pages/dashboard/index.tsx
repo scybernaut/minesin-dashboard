@@ -1,13 +1,12 @@
 import Layout from "../../components/Layout";
 import { dashboardNavs } from "../../lib/navs";
-import { loggedOutReasons } from "../../lib/shorthands";
+import { LoggedOutReasonCodes } from "../../lib/shorthands";
 
 import MembersList from "../../components/MembersList";
+import ResourceBars from "../../components/ResourceBars";
 
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-
-export type LoggedOutReasonCodes = keyof typeof loggedOutReasons;
 
 export default function Dashboard() {
   const router = useRouter();
@@ -22,8 +21,12 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <Layout navs={dashboardNavs} color="bg-gray-900" className="text-white m-4">
-      <MembersList onInvalidToken={authRedirect}></MembersList>
+    <Layout
+      navs={dashboardNavs}
+      color="bg-gray-900"
+      className="text-white m-4 grid grid-cols-1 auto-rows-min gap-4"
+    >
+      <MembersList logout={authRedirect}></MembersList>
     </Layout>
   );
 }

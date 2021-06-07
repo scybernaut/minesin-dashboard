@@ -5,11 +5,10 @@ import PasswordField from "../../components/PasswordField";
 import { mdiLoginVariant } from "@mdi/js";
 import { Transition } from "@headlessui/react";
 import { useEffect, useState } from "react";
-
-import axios from "axios";
 import { useRouter } from "next/router";
 
-import { apiBase, loggedOutReasons } from "../../lib/shorthands";
+import { authenticate } from "../../lib/api";
+import { loggedOutReasons, LoggedOutReasonCodes } from "../../lib/shorthands";
 
 import { oneLine as l1 } from "common-tags";
 
@@ -19,12 +18,20 @@ export default function AuthPage() {
   const [errorText, setErrorText] = useState("");
   const [errorParity, setErrorParity] = useState(false);
 
-  let reason = typeof router.query.reason === "string" ? router.query.reason : "";
   const [showReason, setShowReason] = useState(false);
+  const [reason, setReason] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    reason = typeof router.query.reason === "string" ? router.query.reason : "";
-    setShowReason(loggedOutReasons[reason] !== undefined);
+    if (
+      typeof router.query.reason === "string" &&
+      Object.keys(loggedOutReasons).includes(router.query.reason)
+    ) {
+      const reasonCode = router.query.reason as LoggedOutReasonCodes;
+      setReason(loggedOutReasons[reasonCode]);
+      setShowReason(true);
+    } else {
+      setShowReason(false);
+    }
 
     setTimeout(() => setShowReason(false), 5000);
   }, [router.query.reason]);
@@ -40,14 +47,11 @@ export default function AuthPage() {
     passwordValue = newValue;
   };
 
-  const authenticate = (password: string) => {
-    axios
-      .post(apiBase + "login", { passphrase: password })
-      .then((res) => {
-        if (res.status === 200) {
-          localStorage.setItem("accessToken", res.data.accessToken);
-          router.replace("/dashboard");
-        }
+  const login = (password: string) => {
+    authenticate(password)
+      .then((accessToken) => {
+        localStorage.setItem("accessToken", accessToken);
+        router.replace("/dashboard");
       })
       .catch(() => {
         showError("Incorrect password");
@@ -72,7 +76,7 @@ export default function AuthPage() {
         className={l1`absolute top-14 py-0.5 px-2 mx-4 text-sm rounded-sm border
           bg-yellow-200 text-yellow-700 border-yellow-700`}
       >
-        {loggedOutReasons[reason]}
+        {reason}
       </Transition>
       <div className="w-72 transform -translate-y-8">
         <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
@@ -81,7 +85,7 @@ export default function AuthPage() {
           errorText={errorText}
           errorParity={errorParity}
           valueSetter={setPasswordValue}
-          onEnter={() => authenticate(passwordValue)}
+          onEnter={() => login(passwordValue)}
         />
         <Button
           iconPath={mdiLoginVariant}
@@ -89,7 +93,7 @@ export default function AuthPage() {
           xPadding="pl-3 pr-2.5"
           className="mt-6 mx-auto"
           props={{
-            onClick: () => authenticate(passwordValue),
+            onClick: () => login(passwordValue),
           }}
         >
           Authenticate
