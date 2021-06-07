@@ -62,7 +62,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
     >
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold text-2xl">Members</h2>
-        <div className="flex items-center">
+        <div className="flex items-center ml-4">
           <Switch.Group>
             <Switch.Label className="mr-2 font-medium text-sm" aria-label="Show UUIDs">
               <span className="hidden sm:inline">Show </span>UUIDs
@@ -123,16 +123,17 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                     </span>
                   ) : null}
                 </div>
-                {showUUID && (
-                  <p
-                    className={
-                      "text-sm font-mono text-gray-400 dark:text-gray-400 break-all" +
-                      (member.online ? "" : " opacity-90")
-                    }
-                  >
-                    {formatUUID(member.uuid)}
-                  </p>
-                )}
+                <p
+                  className={
+                    "text-sm font-mono text-gray-400 dark:text-gray-400 break-all" +
+                    (member.online ? "" : " opacity-90") +
+                    // Not using "display: none" in order to maintain width
+                    (showUUID ? "" : " h-0 overflow-hidden")
+                  }
+                  aria-hidden={!showUUID}
+                >
+                  {formatUUID(member.uuid)}
+                </p>
               </div>
             </li>
           );

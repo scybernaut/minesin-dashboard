@@ -66,10 +66,10 @@ export default function Dashboard() {
       className="text-white p-4 mx-auto w-full max-w-5xl"
       showToggle
     >
-      <div className="flex flex-wrap items-start gap-4 lg:gap-8 w-full">
-        <MembersList className="flex-grow" members={members ?? []} />
+      <div className="flex flex-col sm:flex-row sm:items-start sm:flex-wrap gap-4 lg:gap-8 w-full">
+        <MembersList className="flex-grow min-w-fit" members={members ?? []} />
         <ResourceBars
-          className="flex-grow min-w-72"
+          className="flex-grow min-w-2/5"
           usages={{
             cpu: cpu ?? 0,
             ram: ram ?? 0,
