@@ -47,8 +47,8 @@ module.exports = {
         175: "1.75",
       },
       minWidth: {
-        32: "8rem",
-        72: "18rem",
+        "2/5": "40%",
+        fit: "fit-content",
       },
       maxWidth: {
         80: "20rem",
