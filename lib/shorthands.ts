@@ -33,13 +33,15 @@ interface CancelablePromise<T> {
   cancel: () => void;
 }
 
-export const makeResolvingCancelable = <T>(promise: Promise<T>): CancelablePromise<T | void> => {
+export const makeResolvingCancelable = <T>(
+  promise: Promise<T>
+): CancelablePromise<T | undefined> => {
   let hasCanceled_ = false;
 
-  const wrappedPromise = new Promise<T | void>((resolve, reject) =>
+  const wrappedPromise = new Promise<T | undefined>((resolve, reject) =>
     promise.then(
-      (val) => (hasCanceled_ ? resolve() : resolve(val)),
-      (error) => (hasCanceled_ ? resolve() : reject(error))
+      (val) => (hasCanceled_ ? resolve(undefined) : resolve(val)),
+      (error) => (hasCanceled_ ? resolve(undefined) : reject(error))
     )
   );
 
