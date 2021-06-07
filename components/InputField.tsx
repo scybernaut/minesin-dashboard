@@ -20,8 +20,6 @@ export type PasswordFieldProps = {
 const InputField: React.FC<PasswordFieldProps> = (props) => {
   const type = props.type ?? "text";
 
-  console.log(props.error);
-
   const inputProps: Record<string, string> = {};
 
   inputProps.placeholder = props.placeholder ?? props.label;
