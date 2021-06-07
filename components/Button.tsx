@@ -1,4 +1,4 @@
-import React from "react";
+import { FC, createElement } from "react";
 import Icon from "@mdi/react";
 
 import Link from "next/link";
@@ -13,7 +13,7 @@ export type ButtonProps = {
   className?: string;
 };
 
-const Button: React.FC<ButtonProps> = ({
+const Button: FC<ButtonProps> = ({
   iconPath,
   as,
   href,
@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   props,
 }) => {
-  const Button = React.createElement(
+  const Button = createElement(
     as ?? "a",
     {
       className: `text-on-primary bg-primary-light font-semibold py-2 ${
