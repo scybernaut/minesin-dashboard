@@ -1,0 +1,21 @@
+@tailwind base;
+
+@tailwind components;
+
+@font-face {
+  font-family: "Minecrafter";
+  src: url("/fonts/MineCrafter-20.eot");
+  src: url("/fonts/MineCrafter-20.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/MineCrafter-20.woff2") format("woff2"),
+    url("/fonts/MineCrafter-20.woff") format("woff"),
+    url("/fonts/MineCrafter-20.ttf") format("truetype");
+  font-weight: bold;
+  font-style: bold;
+  font-display: swap;
+}
+
+@tailwind utilities;
+
+abbr[title].abbr-no-underline {
+  text-decoration: none;
+}
