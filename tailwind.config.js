@@ -28,7 +28,6 @@ module.exports = {
     },
     extend: {
       minHeight: {
-        12: "3rem",
         "non-nav": "calc(100vh - 3.5rem)",
       },
       height: {
@@ -37,14 +36,10 @@ module.exports = {
       },
       colors: {
         primary: colors.blue["800"],
-        "primary-dark": colors.blue["800"],
         "primary-light": colors.blue["600"],
         "on-primary": colors.white,
-        accent: colors.orange["500"],
+        accent: colors.yellow["500"],
         "on-accent": colors.white,
-      },
-      backdropBrightness: {
-        175: "1.75",
       },
       minWidth: {
         "2/5": "40%",
