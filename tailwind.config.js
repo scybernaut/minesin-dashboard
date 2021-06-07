@@ -49,6 +49,11 @@ module.exports = {
       minWidth: {
         32: "8rem",
       },
+      maxWidth: {
+        80: "20rem",
+        96: "24rem",
+        108: "27rem",
+      },
     },
   },
   variants: {
