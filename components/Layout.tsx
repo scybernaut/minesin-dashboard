@@ -106,15 +106,8 @@ const Layout: React.FC<LayoutProps> = ({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-0"
             className={l1`fixed left-0 top-14 z-10 mx-3 py-1 rounded
-            bg-white text-black`}
+            bg-white text-black shadow-md border-2`}
           >
-            {/* <button
-              className={`flex items-center justify-center w-8 h-8 m-3 rounded ${focusRing}`}
-              onClick={toggleNav}
-            >
-              <Icon path={mdiClose} title="Close navigation menu" />
-            </button> */}
-
             <nav>
               {navs?.map((nav, index) => (
                 <Link href={nav.href} key={nav.name}>
