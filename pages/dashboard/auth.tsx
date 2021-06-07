@@ -113,6 +113,9 @@ export default function AuthPage() {
           case 403:
             showError("Invalid username or password");
             break;
+          case 503:
+            showError("Couldn't connect: host is down");
+            break;
           default:
             showError("An error occured while trying to sign in");
             console.error(err);

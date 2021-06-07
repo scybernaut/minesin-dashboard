@@ -43,37 +43,12 @@ interface MembersListProps {
   className?: string;
 }
 
-const logMap = (
-  n: number,
-  domainFloor: number,
-  domainCeiling: number,
-  rangeFloor: number,
-  rangeCeiling: number
-) => {
-  const logOr0 = (n: number) => {
-    const result = Math.log(n);
-    if (result !== -Infinity) return result;
-    return 0;
-  };
-
-  const result =
-    ((logOr0(n) - logOr0(domainFloor)) / (logOr0(domainCeiling) - logOr0(domainFloor))) *
-      (rangeCeiling - rangeFloor) +
-    rangeFloor;
-
-  return result;
-};
-
 const humanDuration = (ISODate: string | undefined | null) => {
   if (ISODate == undefined) return "";
   return " for " + dayjs(ISODate).toNow(true);
 };
 
-const MAX_DAYS = 3;
-
 const MembersList: FC<MembersListProps> = ({ members, className }) => {
-  const now = dayjs();
-
   const [showUUID, setShowUUID] = useState(false);
 
   useEffect(() => {
@@ -88,79 +63,81 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold text-2xl">Members</h2>
         <div className="flex items-center">
-          <span className="mr-2 font-medium text-sm">
-            <span className="hidden sm:inline">Show </span>UUIDs
-          </span>
-          <Switch
-            checked={showUUID}
-            onChange={(enabled: boolean) => {
-              localStorage.setItem("showUUID", enabled.toString());
-              setShowUUID(enabled);
-            }}
-            className={l1`${showUUID ? "bg-blue-600" : "bg-gray-400 dark:bg-gray-500"}
+          <Switch.Group>
+            <Switch.Label className="mr-2 font-medium text-sm" aria-label="Show UUIDs">
+              <span className="hidden sm:inline">Show </span>UUIDs
+            </Switch.Label>
+            <Switch
+              checked={showUUID}
+              onChange={(enabled: boolean) => {
+                localStorage.setItem("showUUID", enabled.toString());
+                setShowUUID(enabled);
+              }}
+              className={l1`${showUUID ? "bg-blue-600" : "bg-gray-400 dark:bg-gray-500"}
             relative inline-flex items-center h-6 rounded-full w-11
             focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50`}
-          >
-            <span
-              className={l1`transform transition ease-in-out duration-200
+            >
+              <span
+                className={l1`transform transition ease-in-out duration-200
                ${showUUID ? "translate-x-6" : "translate-x-1"}
                inline-block w-4 h-4 transform bg-white rounded-full`}
-            />
-          </Switch>
+              />
+            </Switch>
+          </Switch.Group>
         </div>
       </div>
       <ol className="flex flex-col gap-5">
-        {members?.map((member) => (
-          <li
-            key={member.uuid}
-            className="flex"
-            style={{
-              opacity: member.online
-                ? 1
-                : logMap(
-                    Math.min(now.diff(dayjs(member.offlineSince ?? ""), "days", true), MAX_DAYS) +
-                      1,
-                    1,
-                    MAX_DAYS + 1,
-                    0.9,
-                    0.3
-                  ),
-            }}
-          >
-            <img
-              src={member.skinURL}
-              className="h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated"
-            />
-            <div className="ml-2 flex-grow">
-              <p className="font-semibold leading-none mb-1">{member.ign}</p>
-              <div className="flex justify-between items-center">
-                <div className="flex-shrink-0">
-                  <Icon
-                    path={mdiCircle}
-                    size="0.8em"
-                    className={`inline ${
-                      member.online ? "text-green-500" : "text-gray-500 dark:text-gray-400"
-                    } transform -translate-y-0.5`}
-                  />
-                  {member.online
-                    ? " Online" + humanDuration(member.onlineSince)
-                    : " Offline" + humanDuration(member.offlineSince)}
-                </div>
+        {members?.map((member) => {
+          const opacityClass = member.online ? "" : " opacity-70";
 
-                {member.online ? (
-                  <span className="flex-grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
-                    {(member.location ?? "").toUpperCase()}
-                  </span>
-                ) : null}
+          return (
+            <li key={member.uuid} className="flex">
+              <img
+                src={member.skinURL}
+                alt={member.ign + "'s Minecraft skin"}
+                width="2.5rem"
+                height="2.5rem"
+                className={
+                  "h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated" + opacityClass
+                }
+              />
+              <div className="ml-2 flex-grow">
+                <p className={"font-semibold leading-none mb-1" + opacityClass}>{member.ign}</p>
+                <div className={"flex justify-between items-center" + opacityClass}>
+                  <div className="flex-shrink-0">
+                    <Icon
+                      path={mdiCircle}
+                      size="0.8em"
+                      className={`inline ${
+                        member.online ? "text-green-500" : "text-gray-500 dark:text-gray-400"
+                      } transform -translate-y-0.5`}
+                      role="presentation"
+                    />
+                    {member.online
+                      ? " Online" + humanDuration(member.onlineSince)
+                      : " Offline" + humanDuration(member.offlineSince)}
+                  </div>
+
+                  {member.online ? (
+                    <span className="flex-grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
+                      {(member.location ?? "").toUpperCase()}
+                    </span>
+                  ) : null}
+                </div>
+                {showUUID && (
+                  <p
+                    className={
+                      "text-sm font-mono text-gray-400 dark:text-gray-400 break-all" +
+                      (member.online ? "" : " opacity-90")
+                    }
+                  >
+                    {formatUUID(member.uuid)}
+                  </p>
+                )}
               </div>
-              {showUUID && (
-                <p className="text-sm font-mono text-gray-400 dark:text-gray-400 break-all">
-                  {formatUUID(member.uuid)}
-                </p>
-              )}
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ol>
     </div>
   );

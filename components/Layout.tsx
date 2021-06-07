@@ -78,80 +78,80 @@ const Layout: React.FC<LayoutProps> = ({
               transition-colors duration-300 ease-in text-on-primary flex-grow-0
               top-0 left-0 right-0 sticky z-10 flex items-center justify-center`}
       >
-        <Link href="/">
-          <a className="text-2xl font-extrabold font-minecraft select-none relative z-10 transform translate-y-1.5 translate-x-0.5">
-            MINESIN
-          </a>
-        </Link>
         <div
           className={l1`absolute top-0 w-full p-3 mx-auto
                           ${fullWidth ? "" : "max-w-5xl"} flex justify-between`}
         >
-          <div>
-            {actions.navs != null ? (
-              <>
-                <Transition
-                  show
-                  appear
-                  enter="transition ease-in-out duration-300"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                >
-                  <button
-                    className={`flex items-center justify-center
+          {actions.navs != null ? (
+            <nav>
+              <button
+                className={`flex items-center justify-center
                 top-3 left-3 w-8 h-8 rounded ${focusRing}
                 transition-opacity duration-100 ease-in-out`}
-                    onClick={toggleNav}
-                  >
-                    <Icon
-                      path={navOpen ? mdiClose : mdiMenu}
-                      title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
-                      id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
-                    />
-                  </button>
-                </Transition>
-                <Transition
-                  show={navOpen}
-                  enter="transition ease-in-out duration-300 transform origin-top-left"
-                  enterFrom="opacity-0 scale-0"
-                  enterTo="opacity-100 scale-100"
-                  leave="transition ease-in-out duration-150 transform origin-top-left"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-0"
-                  className={l1`relative mx-1 my-2 py-1 rounded
-                                  bg-white text-black shadow-md border-2`}
-                  as="nav"
-                >
-                  {actions.navs?.map((nav, index) => (
+                onClick={toggleNav}
+              >
+                <Icon
+                  path={navOpen ? mdiClose : mdiMenu}
+                  title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
+                  id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
+                />
+              </button>
+              <Transition
+                show={navOpen}
+                enter="transition ease-in-out duration-300 transform origin-top-left"
+                enterFrom="opacity-0 scale-0"
+                enterTo="opacity-100 scale-100"
+                leave="transition ease-in-out duration-150 transform origin-top-left"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-0"
+                className={l1`relative mx-1 my-2 py-1 rounded
+                              bg-white text-black shadow-md border-2`}
+                as="ul"
+                unmount={false}
+              >
+                {actions.navs?.map((nav, index) => (
+                  <li>
                     <Link href={nav.href} key={nav.name}>
                       <a
-                        className={`block font-medium pl-4 pr-6 py-2 rounded ${
-                          index === pageIndex && "text-primary-light font-bold"
-                        }`}
+                        className={l1`block font-medium pl-4 pr-6 py-2 rounded ${focusRing}
+                        ${index === pageIndex ? "text-primary-light font-bold" : ""}`}
                       >
                         {nav.name}
                       </a>
                     </Link>
-                  ))}
-                </Transition>
-              </>
-            ) : null}
-          </div>
+                  </li>
+                ))}
+              </Transition>
+            </nav>
+          ) : null}
+          <Link href="/">
+            <a
+              className={l1`text-2xl font-extrabold font-minecraft select-none
+                absolute top-3 left-1/2 z-10
+                transform -translate-x-1/2
+                pl-1.5 pt-2 rounded
+                ${focusRing}`}
+              aria-label="Go to home page"
+            >
+              MINESIN
+            </a>
+          </Link>
           <div className="flex items-center top-3 right-3 h-8 gap-1 sm:gap-4">
             {showToggle ? (
               <button
-                className={`flex items-center justify-center h-8 top-3 right-3 rounded ${focusRing}`}
+                className={`flex items-center justify-center h-8 top-3 right-3 rounded sm:px-1 ${focusRing}`}
                 onClick={() => {
                   localStorage.setItem("darkTheme", (!darkTheme).toString());
                   setDarkTheme(!darkTheme);
                 }}
+                aria-label="Toggle dark theme"
               >
-                <p className="font-medium mr-1 hidden sm:block">{`${
-                  darkTheme ? "Light" : "Dark"
-                } theme`}</p>
+                <p className="font-medium mr-1 hidden sm:block">
+                  {`${darkTheme ? "Light" : "Dark"} theme`}
+                </p>
                 <Icon
                   path={darkTheme ? mdiBrightness7 : mdiBrightness3}
-                  title="Toggle dark theme"
+                  title="Toggle theme icon"
                   id="theme-toggle"
                   className="w-8 h-8 sm:h-6 sm:w-6"
                 />
@@ -159,16 +159,19 @@ const Layout: React.FC<LayoutProps> = ({
             ) : null}
             {actions.buttonAction ? (
               <button
-                className={`flex items-center justify-center h-8 rounded ${focusRing}`}
+                className={`flex items-center justify-center h-8 rounded sm:px-1 ${focusRing}`}
                 onClick={actions.buttonAction.onClick}
+                aria-labelledby="logout-text"
               >
                 {actions.buttonAction.name === "logout" && (
                   <>
-                    <p className="font-medium mr-1 hidden sm:block">Log out</p>
+                    <p id="logout-text" className="font-medium mr-1 hidden sm:block">
+                      Log out
+                    </p>
                     <Icon
                       path={mdiLogoutVariant}
-                      title="Log out"
-                      id="logout"
+                      title="Log out icon"
+                      id="logout-icon"
                       className="w-8 h-8 sm:h-6 sm:w-6"
                     />
                   </>
