@@ -113,7 +113,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
         {members?.map((member) => (
           <li
             key={member.uuid}
-            className={`${showUUID ? "h-auto" : "h-10"} flex`}
+            className="flex"
             style={{
               opacity: member.online
                 ? 1
@@ -131,8 +131,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
               src={member.skinURL}
               className="h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated"
             />
-            <p className="ml-2 flex-grow">
-              <p className="font-semibold">{member.ign}</p>
+            <div className="ml-2 flex-grow">
+              <p className="font-semibold leading-none mb-1">{member.ign}</p>
               <div className="flex justify-between items-center">
                 <div className="flex-shrink-0">
                   <Icon
@@ -158,7 +158,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                   {formatUUID(member.uuid)}
                 </p>
               )}
-            </p>
+            </div>
           </li>
         ))}
       </ol>
