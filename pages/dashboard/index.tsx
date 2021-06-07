@@ -33,6 +33,8 @@ export default function Dashboard() {
     const api = new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true);
 
     const retrieveData = async () => {
+      if (document.visibilityState !== "visible") return;
+
       const promises = getPromises(api);
 
       const ongoing = [

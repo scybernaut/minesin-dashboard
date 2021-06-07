@@ -13,6 +13,8 @@ import { loggedOutReasons, LoggedOutReasonCode, logoutOptions } from "../../lib/
 import { oneLine as l1 } from "common-tags";
 import { AxiosError } from "axios";
 
+import _once from "lodash/once";
+
 export default function AuthPage() {
   const router = useRouter();
 
@@ -32,8 +34,23 @@ export default function AuthPage() {
       // Should be safe to cast type as the type is already checked in the above statement
       const safeReasonCode = reasonCode as Exclude<LoggedOutReasonCode, null>;
 
+      const showReason = _once(() => {
       setReason(loggedOutReasons[safeReasonCode]);
       setShowReason(true);
+      });
+
+      if (document.visibilityState === "visible") {
+        showReason();
+      } else {
+        window.addEventListener(
+          "visibilitychange",
+          () => {
+            if (document.visibilityState !== "visible") return;
+            showReason();
+          },
+          { once: true }
+        );
+      }
     }
 
     if (optionsMask != NaN) {
