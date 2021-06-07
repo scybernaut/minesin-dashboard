@@ -4,7 +4,7 @@ import InputField from "../../components/InputField";
 
 import { mdiLoginVariant } from "@mdi/js";
 import { Transition } from "@headlessui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 
 import { authenticate, checkTokenStatus, tokenStatus } from "../../lib/api";
@@ -73,21 +73,37 @@ export default function AuthPage() {
     setErrorParity(!errorParity);
   };
 
-  let usernameValue = "";
-  let passwordValue = "";
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
-  const setPasswordValue = (newValue: string) => {
-    passwordValue = newValue;
-  };
+  const [remember, setRemember] = useState(false);
 
-  const setUsernameValue = (newValue: string) => {
-    usernameValue = newValue;
-  };
+  useEffect(() => {
+    if (usernameRef.current === null) return;
+    const saved = localStorage.getItem("savedUsername");
+
+    if (!saved) {
+      usernameRef.current.focus();
+      return;
+    }
+
+    setRemember(true);
+    if (!usernameRef.current.value) usernameRef.current.value = saved;
+    passwordRef.current?.focus();
+  }, [usernameRef.current]);
 
   const login = () => {
-    authenticate(usernameValue, passwordValue)
+    if (usernameRef.current === null) return;
+    if (passwordRef.current === null) return;
+
+    const username = usernameRef.current.value;
+    const password = passwordRef.current.value;
+
+    authenticate(username, password)
       .then((accessToken) => {
         localStorage.setItem("accessToken", accessToken);
+        if (remember) localStorage.setItem("savedUsername", username);
+        else localStorage.removeItem("savedUsername");
         router.replace("/dashboard");
       })
       .catch((err: AxiosError) => {
@@ -127,17 +143,31 @@ export default function AuthPage() {
         <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
         <InputField
           label="Minecraft Username"
+          id="username-field"
           placeholder="Username"
-          valueSetter={setUsernameValue}
+          errorText={errorText}
+          errorParity={errorParity}
+          inputRef={usernameRef}
+          noErrorText
         />
         <InputField
           label="Password"
+          id="password-field"
           type="password"
           errorText={errorText}
           errorParity={errorParity}
-          valueSetter={setPasswordValue}
+          inputRef={passwordRef}
           onEnter={login}
         />
+        <input
+          id="remember-checkbox"
+          type="checkbox"
+          checked={remember}
+          onChange={(e) => setRemember(e.target.checked)}
+        />
+        <label htmlFor="remember-checkbox" className="m-2">
+          Remember me
+        </label>
         <Button
           iconPath={mdiLoginVariant}
           as="button"

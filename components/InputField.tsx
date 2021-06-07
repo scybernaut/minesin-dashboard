@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Ref, useEffect, useState } from "react";
 import { oneLine as l1 } from "common-tags";
 import _uniqueId from "lodash/uniqueId";
 
@@ -7,10 +7,12 @@ export type PasswordFieldProps = {
   placeholder?: string;
   errorText?: string;
   inputProps?: Record<string, any>;
-  valueSetter?: (password: string) => void;
   errorParity?: boolean;
   onEnter?: () => void;
   type?: string;
+  id?: string;
+  noErrorText?: boolean;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 const InputField: React.FC<PasswordFieldProps> = (props) => {
@@ -25,7 +27,7 @@ const InputField: React.FC<PasswordFieldProps> = (props) => {
 
   Object.assign(inputProps, props.inputProps);
 
-  const id = _uniqueId("field-");
+  const id = props.id ?? _uniqueId("field-");
 
   return (
     <div className="mb-4">
@@ -38,14 +40,14 @@ const InputField: React.FC<PasswordFieldProps> = (props) => {
         focus:ring-opacity-100`}
         type={type}
         id={id}
+        ref={props.inputRef}
         {...inputProps}
-        onChange={(event) => {
-          setHighlightError(false);
-          props.valueSetter?.(event.target.value);
-        }}
+        onChange={() => setHighlightError(false)}
         onKeyPress={(event) => event.key === "Enter" && props.onEnter?.()}
       />
-      {highlightError && <p className="text-red-500 font-medium mt-1">{props.errorText}</p>}
+      {!props.noErrorText && highlightError && (
+        <p className="text-red-500 font-medium mt-1">{props.errorText}</p>
+      )}
     </div>
   );
 };
