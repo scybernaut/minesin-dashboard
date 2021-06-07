@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 
-import MinesinAPI, { MembersArray } from "../lib/api";
+import { MembersArray } from "../lib/api";
 
 import Icon from "@mdi/react";
 import { mdiCircle } from "@mdi/js";
@@ -34,24 +34,10 @@ dayjs.updateLocale("en", {
 });
 
 interface MembersListProps {
-  api: MinesinAPI | undefined;
+  members: MembersArray;
 }
 
-const MembersList: FC<MembersListProps> = ({ api }) => {
-  const [members, setMembers] = useState<MembersArray>();
-
-  useEffect(() => {
-    if (api === undefined) return;
-
-    const membersPromise = api.getMembers();
-    membersPromise.promise
-      .then((members) => setMembers(members ?? []))
-      .catch((reason) => {
-        if (reason.isCancelled !== true) throw reason;
-      });
-    return () => membersPromise.cancel();
-  }, [api]);
-
+const MembersList: FC<MembersListProps> = ({ members }) => {
   return (
     <div className="bg-white text-black p-4 rounded-md max-w-md">
       <h2 className="font-bold text-2xl mb-3">Members</h2>
