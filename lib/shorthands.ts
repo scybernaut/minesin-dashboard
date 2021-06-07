@@ -1,4 +1,3 @@
-import { once } from "lodash";
 import { NextRouter } from "next/router";
 
 export const focusRing = "focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-70";
@@ -16,15 +15,17 @@ export enum logoutOptions {
   removeToken = 0b10,
 }
 
-export const routeLogout = once(
-  (router: NextRouter, reasonCode?: LoggedOutReasonCode | null, optionsBitmask?: number) => {
-    const params = new URLSearchParams();
-    if (reasonCode) params.append("reason", reasonCode);
-    if (optionsBitmask) params.append("options", optionsBitmask.toString());
-    const paramsWithQuery = params ? "?" + params : "";
-    router.replace("/dashboard/auth" + paramsWithQuery);
-  }
-);
+export const routeLogout = (
+  router: NextRouter,
+  reasonCode?: LoggedOutReasonCode | null,
+  optionsBitmask?: number
+) => {
+  const params = new URLSearchParams();
+  if (reasonCode) params.append("reason", reasonCode);
+  if (optionsBitmask) params.append("options", optionsBitmask.toString());
+  const paramsWithQuery = params ? "?" + params : "";
+  router.replace("/dashboard/auth" + paramsWithQuery);
+};
 
 interface CancelablePromise<T> {
   promise: Promise<T>;
