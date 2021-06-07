@@ -11,29 +11,32 @@ import { mdiClose, mdiMenu, mdiLogoutVariant } from "@mdi/js";
 import { oneLine as l1 } from "common-tags";
 import throttle from "lodash/throttle";
 
-export type LayoutProps = {
+export type LayoutActions = {
   navs: Array<{ name: string; href: string }> | null;
-  color: string;
-  action?: {
+  buttonAction?: {
     name: string;
     onClick: MouseEventHandler;
   };
+};
+
+export type LayoutProps = {
+  color: string;
+  actions: LayoutActions;
   className?: string;
   alwaysTransparent?: boolean;
   useSolid?: boolean;
 };
 
 const Layout: React.FC<LayoutProps> = ({
-  navs,
   color,
   children,
   className,
-  action,
+  actions,
   useSolid,
   alwaysTransparent,
 }) => {
   const router = useRouter();
-  const pageIndex = navs?.findIndex((nav) => nav.href === router.pathname);
+  const pageIndex = actions.navs?.findIndex((nav) => nav.href === router.pathname);
   const [transparent, setTransparent] = useState(true);
   const scrollRef = useRef<HTMLElement>(null);
 
@@ -67,7 +70,7 @@ const Layout: React.FC<LayoutProps> = ({
               top-0 left-0 right-0 sticky z-20`}
         >
           <div className="flex items-center justify-center h-full">
-            {navs != null ? (
+            {actions.navs != null ? (
               <Transition
                 show
                 appear
@@ -94,19 +97,19 @@ const Layout: React.FC<LayoutProps> = ({
                 MINESIN
               </a>
             </Link>
-            {action ? (
+            {actions.buttonAction ? (
               <button
                 className={`flex items-center justify-center w-8 h-8 absolute top-3 right-3 rounded ${focusRing}`}
-                onClick={action.onClick}
+                onClick={actions.buttonAction.onClick}
               >
-                {action.name === "logout" && (
+                {actions.buttonAction.name === "logout" && (
                   <Icon path={mdiLogoutVariant} title="Log out" id="logout" />
                 )}
               </button>
             ) : null}
           </div>
         </header>
-        {navs != null ? (
+        {actions.navs != null ? (
           <Transition
             show={navOpen}
             enter="transition ease-in-out duration-300 transform origin-top-left"
@@ -119,7 +122,7 @@ const Layout: React.FC<LayoutProps> = ({
             bg-white text-black shadow-md border-2`}
             as="nav"
           >
-            {navs?.map((nav, index) => (
+            {actions.navs?.map((nav, index) => (
               <Link href={nav.href} key={nav.name}>
                 <a
                   className={`block font-medium pl-4 pr-6 py-2 rounded ${

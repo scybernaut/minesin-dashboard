@@ -3,6 +3,7 @@ import { NextRouter } from "next/router";
 import { LoggedOutReasonCode, logoutOptions, makeCancelable, routeLogout } from "./shorthands";
 
 import dayjs from "dayjs";
+import { once } from "lodash";
 
 axios.defaults.baseURL = "https://omsinkrissada.sytes.net/api/minecraft/";
 
@@ -86,6 +87,12 @@ export default class MinesinAPI {
   router: NextRouter;
   instance: AxiosInstance;
 
+  #logout = once(
+    (router: NextRouter, reasonCode?: LoggedOutReasonCode | null, optionsBitmask?: number) => {
+      routeLogout(router, reasonCode, optionsBitmask);
+    }
+  );
+
   constructor(token: string, router: NextRouter, checkToken = false) {
     this.token = token;
     this.router = router;
@@ -94,7 +101,7 @@ export default class MinesinAPI {
       const status = checkTokenStatus(token);
       if (status !== tokenStatus.Valid) {
         const options = status !== tokenStatus.Empty ? logoutOptions.removeToken : undefined;
-        routeLogout(this.router, status || undefined, options);
+        this.#logout(this.router, status || undefined, options);
       }
     }
 
@@ -106,7 +113,7 @@ export default class MinesinAPI {
 
   #errorHandler = (err: AxiosError<MinesinAPIError>) => {
     const logoutReason = errorToLogoutReason(err);
-    routeLogout(this.router, logoutReason, logoutOptions.removeToken);
+    this.#logout(this.router, logoutReason, logoutOptions.removeToken);
     return undefined;
   };
 

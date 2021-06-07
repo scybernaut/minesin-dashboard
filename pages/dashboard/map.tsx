@@ -1,9 +1,12 @@
 import Layout from "../../components/Layout";
-import { dashboardNavs } from "../../lib/navs";
+import { dashboardActions } from "../../lib/actions";
+import { useRouter } from "next/router";
 
 export default function Map() {
+  const router = useRouter();
+
   return (
-    <Layout navs={dashboardNavs} color="bg-gray-900">
+    <Layout actions={dashboardActions(router)} color="bg-gray-900">
       <iframe
         src="https://omsinkrissada.sytes.net/api/minecraft/map/"
         title="Minecraft world map"
