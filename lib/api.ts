@@ -15,7 +15,7 @@ axios.defaults.baseURL = "https://omsinkrissada.sytes.net/api/minecraft/";
 export type MembersArray = Array<{
   ign: string;
   location: string | null;
-  nickname: string;
+  nickname: string | null; // Unused
   online: boolean;
   onlineSince: string | null;
   offlineSince: string | null;

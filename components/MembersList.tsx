@@ -2,9 +2,7 @@ import { FC, useState, useEffect } from "react";
 
 import { MembersArray } from "../lib/api";
 import { formatUUID } from "../lib/shorthands";
-
-import Icon from "@mdi/react";
-import { mdiCircle } from "@mdi/js";
+import { dot, dot__active } from "./dotIndicator.module.css";
 
 import { Switch } from "@headlessui/react";
 
@@ -74,8 +72,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                 setShowUUID(enabled);
               }}
               className={l1`${showUUID ? "bg-blue-600" : "bg-gray-400 dark:bg-gray-500"}
-            relative inline-flex items-center h-6 rounded-full w-11
-            focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50`}
+                              relative inline-flex items-center h-6 rounded-full w-11
+                              focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50`}
             >
               <span
                 className={l1`transform transition ease-in-out duration-200
@@ -104,18 +102,11 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
               <div className="ml-2 flex-grow">
                 <p className={"font-semibold leading-none mb-1" + opacityClass}>{member.ign}</p>
                 <div className={"flex justify-between items-center" + opacityClass}>
-                  <div className="flex-shrink-0">
-                    <Icon
-                      path={mdiCircle}
-                      size="0.8em"
-                      className={`inline mr-1 ${
-                        member.online ? "text-green-500" : "text-gray-500 dark:text-gray-400"
-                      } transform -translate-y-0.5`}
-                    />
+                  <p className={`flex-shrink-0 ${dot} ${member.online ? dot__active : ""}`}>
                     {member.online
                       ? "Online" + humanDuration(member.onlineSince)
                       : "Offline" + humanDuration(member.offlineSince)}
-                  </div>
+                  </p>
 
                   {member.online ? (
                     <span className="flex-grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
