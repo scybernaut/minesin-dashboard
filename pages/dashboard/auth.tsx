@@ -123,7 +123,7 @@ export default function AuthPage() {
       >
         {reason}
       </Transition>
-      <div className="w-72 sm:w-80 lg:w-96 m-4">
+      <div className="w-full max-w-80 sm:max-w-96 lg:max-w-108 p-4">
         <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
         <InputField
           label="Minecraft Username"
@@ -142,7 +142,7 @@ export default function AuthPage() {
           iconPath={mdiLoginVariant}
           as="button"
           xPadding="pl-3 pr-2.5"
-          className="mt-6 mx-auto"
+          className="mt-8 mx-auto"
           props={{
             onClick: login,
           }}
