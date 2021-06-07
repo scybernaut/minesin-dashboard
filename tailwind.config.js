@@ -31,6 +31,7 @@ module.exports = {
       },
       height: {
         nav: "3.5rem",
+        "non-nav": "calc(100vh - 3.5rem)",
       },
       colors: {
         primary: colors.blue["800"],

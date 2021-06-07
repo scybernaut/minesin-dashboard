@@ -6,6 +6,7 @@ export const focusRing = "focus:outline-none focus:ring focus:ring-blue-400 focu
 export const loggedOutReasons = {
   token_invalid: "Your token is invalid.",
   token_expired: "Your session has expired.",
+  logout: "Logged out successfully.",
 };
 
 export type LoggedOutReasonCode = keyof typeof loggedOutReasons | null;

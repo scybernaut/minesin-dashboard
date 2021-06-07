@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <Layout navs={homeNavs} color="bg-gray-900" className="text-white flex flex-col justify-center">
-      <div className="flex flex-col justify-center items-center m-4 gap-y-10 transform -translate-y-8">
+      <div className="flex flex-col justify-center items-center m-4 gap-y-10">
         <h1 className="text-3xl font-extrabold mb-2">Hello there!</h1>
         <p className="text-lg text-center leading-relaxed">
           Welcome to the next version of{" "}
