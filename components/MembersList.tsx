@@ -49,33 +49,31 @@ const MembersList: FC<MembersListProps> = ({ api }) => {
       <h2 className="font-bold text-2xl mb-3">Members</h2>
       <ol className="flex flex-col gap-5">
         {members?.map((member) => (
-          <>
-            <li key={member.uuid} className="h-10 flex items-center">
-              <img
-                src={member.skinURL}
-                className="h-full w-10 flex-shrink-0 bg-gray-300 rounded-md"
-              ></img>
-              <p className="ml-2 flex-shrink-0">
-                <span className="font-semibold">{member.ign}</span>
-                <br />
-                <Icon
-                  path={mdiCircle}
-                  size="0.8em"
-                  className={`inline ${
-                    member.online ? "text-green-500" : "text-gray-500"
-                  } transform -translate-y-0.5`}
-                />
-                {member.online
-                  ? " Online for " + dayjs.duration(member.onlineFor).humanize(false)
-                  : " Offline for " + dayjs(member.lastseen ?? 0).toNow(true)}
-              </p>
-              {member.online ? (
-                <span className="flex-grow flex-shrink self-end ml-4 text-right font-medium text-sm leading-none">
-                  {(member.location ?? "").toUpperCase()}
-                </span>
-              ) : null}
-            </li>
-          </>
+          <li key={member.uuid} className="h-10 flex items-center">
+            <img
+              src={member.skinURL}
+              className="h-full w-10 flex-shrink-0 bg-gray-300 rounded-md"
+            ></img>
+            <p className="ml-2 flex-shrink-0">
+              <span className="font-semibold">{member.ign}</span>
+              <br />
+              <Icon
+                path={mdiCircle}
+                size="0.8em"
+                className={`inline ${
+                  member.online ? "text-green-500" : "text-gray-500"
+                } transform -translate-y-0.5`}
+              />
+              {member.online
+                ? " Online for " + dayjs.duration(member.onlineFor).humanize(false)
+                : " Offline for " + dayjs(member.lastseen ?? 0).toNow(true)}
+            </p>
+            {member.online ? (
+              <span className="flex-grow flex-shrink self-end ml-4 text-right font-medium text-sm leading-none">
+                {(member.location ?? "").toUpperCase()}
+              </span>
+            ) : null}
+          </li>
         ))}
       </ol>
     </div>
