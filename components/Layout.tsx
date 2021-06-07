@@ -9,7 +9,7 @@ import Icon from "@mdi/react";
 import { mdiClose, mdiMenu, mdiLogoutVariant, mdiBrightness3, mdiBrightness7 } from "@mdi/js";
 
 import { oneLine as l1 } from "common-tags";
-import throttle from "lodash/throttle";
+import _throttle from "lodash/throttle";
 
 export type LayoutActions = {
   navs: Array<{ name: string; href: string }> | null;
@@ -55,7 +55,7 @@ const Layout: React.FC<LayoutProps> = ({
   useEffect(() => {
     if (always !== undefined) return;
 
-    const checkScroll = throttle(() => {
+    const checkScroll = _throttle(() => {
       const scrollTop: number = window.scrollY;
 
       if (scrollTop > 10) setTransparent(false);

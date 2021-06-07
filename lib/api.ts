@@ -8,7 +8,7 @@ import {
 } from "./shorthands";
 
 import dayjs from "dayjs";
-import { once } from "lodash";
+import _once from "lodash/once";
 
 axios.defaults.baseURL = "https://omsinkrissada.sytes.net/api/minecraft/";
 
@@ -39,8 +39,8 @@ export enum tokenStatus {
   Expired = "token_expired",
 }
 
-export const authenticate = async (password: string) => {
-  return axios.post("/login", { passphrase: password }).then((res) => res.data.accessToken);
+export const authenticate = async (username: string, password: string) => {
+  return axios.post("/login", { username, password }).then((res) => res.data.accessToken);
 };
 
 type MinesinAPITokenPayload = {
@@ -88,7 +88,7 @@ export default class MinesinAPI {
   router: NextRouter;
   instance: AxiosInstance;
 
-  #logout = once(
+  #logout = _once(
     (router: NextRouter, reasonCode?: LoggedOutReasonCode, optionsBitmask?: number) => {
       routeLogout(router, reasonCode, optionsBitmask);
     }
