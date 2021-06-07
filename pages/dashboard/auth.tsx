@@ -92,7 +92,8 @@ export default function AuthPage() {
     passwordRef.current?.focus();
   }, [usernameRef.current]);
 
-  const login = () => {
+  const login = (e?: { preventDefault: () => any }) => {
+    e?.preventDefault();
     if (usernameRef.current === null) return;
     if (passwordRef.current === null) return;
 
@@ -139,7 +140,7 @@ export default function AuthPage() {
       >
         {reason}
       </Transition>
-      <div className="w-full max-w-80 sm:max-w-96 lg:max-w-108 p-4">
+      <form className="w-full max-w-80 sm:max-w-96 lg:max-w-108 p-4">
         <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
         <InputField
           label="Minecraft Username"
@@ -179,7 +180,7 @@ export default function AuthPage() {
         >
           Authenticate
         </Button>
-      </div>
+      </form>
     </Layout>
   );
 }

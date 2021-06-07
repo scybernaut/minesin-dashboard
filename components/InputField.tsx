@@ -8,7 +8,7 @@ export type PasswordFieldProps = {
   errorText?: string;
   inputProps?: Record<string, any>;
   errorParity?: boolean;
-  onEnter?: () => void;
+  onEnter?: (e?: { preventDefault: () => any }) => void;
   type?: string;
   id?: string;
   noErrorText?: boolean;
@@ -43,7 +43,7 @@ const InputField: React.FC<PasswordFieldProps> = (props) => {
         ref={props.inputRef}
         {...inputProps}
         onChange={() => setHighlightError(false)}
-        onKeyPress={(event) => event.key === "Enter" && props.onEnter?.()}
+        onKeyPress={(event) => event.key === "Enter" && props.onEnter?.(event)}
       />
       {!props.noErrorText && highlightError && (
         <p className="text-red-500 font-medium mt-1">{props.errorText}</p>
