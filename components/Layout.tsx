@@ -110,8 +110,8 @@ const Layout: React.FC<LayoutProps> = ({
                 unmount={false}
               >
                 {actions.navs?.map((nav, index) => (
-                  <li>
-                    <Link href={nav.href} key={nav.name}>
+                  <li key={nav.name}>
+                    <Link href={nav.href}>
                       <a
                         className={l1`block font-medium pl-4 pr-6 py-2 rounded ${focusRing}
                         ${index === pageIndex ? "text-primary-light font-bold" : ""}`}
