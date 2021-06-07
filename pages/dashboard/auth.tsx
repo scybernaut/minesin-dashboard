@@ -1,6 +1,6 @@
 import Button from "../../components/Button";
 import Layout from "../../components/Layout";
-import PasswordField from "../../components/PasswordField";
+import InputField from "../../components/InputField";
 
 import { mdiLoginVariant } from "@mdi/js";
 import { Transition } from "@headlessui/react";
@@ -35,8 +35,8 @@ export default function AuthPage() {
       const safeReasonCode = reasonCode as Exclude<LoggedOutReasonCode, null>;
 
       const showReason = _once(() => {
-      setReason(loggedOutReasons[safeReasonCode]);
-      setShowReason(true);
+        setReason(loggedOutReasons[safeReasonCode]);
+        setShowReason(true);
       });
 
       if (document.visibilityState === "visible") {
@@ -73,23 +73,32 @@ export default function AuthPage() {
     setErrorParity(!errorParity);
   };
 
+  let usernameValue = "";
   let passwordValue = "";
 
   const setPasswordValue = (newValue: string) => {
     passwordValue = newValue;
   };
 
-  const login = (password: string) => {
-    authenticate(password)
+  const setUsernameValue = (newValue: string) => {
+    usernameValue = newValue;
+  };
+
+  const login = () => {
+    authenticate(usernameValue, passwordValue)
       .then((accessToken) => {
         localStorage.setItem("accessToken", accessToken);
         router.replace("/dashboard");
       })
       .catch((err: AxiosError) => {
-        if (err.response?.status === 403) showError("Incorrect password");
-        else {
-          showError("An error occured while trying to sign in");
-          console.error(err);
+        switch (err.response?.status) {
+          case 400:
+          case 403:
+            showError("Invalid username or password");
+            break;
+          default:
+            showError("An error occured while trying to sign in");
+            console.error(err);
         }
       });
   };
@@ -116,12 +125,18 @@ export default function AuthPage() {
       </Transition>
       <div className="w-72 sm:w-80 lg:w-96 m-4">
         <h2 className="text-3xl font-bold text-center mb-10">Hello, friends!</h2>
-        <PasswordField
+        <InputField
+          label="Minecraft Username"
+          placeholder="Username"
+          valueSetter={setUsernameValue}
+        />
+        <InputField
           label="Password"
+          type="password"
           errorText={errorText}
           errorParity={errorParity}
           valueSetter={setPasswordValue}
-          onEnter={() => login(passwordValue)}
+          onEnter={login}
         />
         <Button
           iconPath={mdiLoginVariant}
@@ -129,7 +144,7 @@ export default function AuthPage() {
           xPadding="pl-3 pr-2.5"
           className="mt-6 mx-auto"
           props={{
-            onClick: () => login(passwordValue),
+            onClick: login,
           }}
         >
           Authenticate
