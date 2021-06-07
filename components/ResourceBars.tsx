@@ -1,8 +1,5 @@
 import { FC } from "react";
 
-import Icon from "@mdi/react";
-import { mdiCircle } from "@mdi/js";
-
 import ProgressBar from "./ProgressBar";
 
 import { oneLine as l1 } from "common-tags";
@@ -41,26 +38,17 @@ const ResourceBar: FC<ResourceBarProps> = ({ usages, className }) => {
                     p-4 rounded-md ${className ? className : ""}`}
     >
       <h2 className="text-2xl font-bold mb-4">Resources</h2>
-      <p className="font-semibold">CPU Usage</p>
+      <div className="flex justify-between items-end">
+        <span className="leading-relaxed font-semibold">CPU Usage</span>
+        <span className="leading-snug number-alt">{usages.cpu.toFixed(2)}%</span>
+      </div>
       <ProgressBar color={cpuColor.bg} progress={usages.cpu} />
-      <p className="mb-2">
-        <Icon
-          path={mdiCircle}
-          size="0.8em"
-          className={`inline ${cpuColor.text} transform -translate-y-0.5`}
-        />{" "}
-        Used: {usages.cpu.toFixed(2)}%
-      </p>
-      <p className="font-semibold">RAM Usage</p>
+
+      <div className="flex justify-between items-end mt-4">
+        <span className="leading-relaxed font-semibold">RAM Usage</span>
+        <span className="leading-snug number-alt">{usages.ram.toFixed(2)}%</span>
+      </div>
       <ProgressBar color={ramColor.bg} progress={usages.ram} />
-      <p className="mb-2">
-        <Icon
-          path={mdiCircle}
-          size="0.8em"
-          className={`inline ${ramColor.text} transform -translate-y-0.5`}
-        />{" "}
-        Used: {usages.ram.toFixed(2)}%
-      </p>
     </div>
   );
 };

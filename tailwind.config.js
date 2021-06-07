@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: [
+        "Inter var",
         "Inter",
         "-apple-system",
         "BlinkMacSystemFont",
@@ -15,6 +16,7 @@ module.exports = {
       ],
       minecraft: [
         "Minecrafter",
+        "Inter var",
         "Inter",
         "-apple-system",
         "BlinkMacSystemFont",
