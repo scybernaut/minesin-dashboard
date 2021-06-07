@@ -1,0 +1,16 @@
+.dot::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 9999px;
+  background-color: #9ca3af; /* Tailwind's gray-400 */
+  margin-right: 0.3em;
+  transform: translateY(-10%);
+}
+
+/* It's hard to import modules with dash character in JS
+   so underscore is used here instead */
+.dot.dot__active::before {
+  background-color: #22c55e; /* Tailwind's green-500 */
+}
