@@ -26,7 +26,7 @@ export type LayoutProps = {
   useSolid?: boolean;
   always?: string;
   fullWidth?: boolean;
-  noToggle?: boolean;
+  showToggle?: boolean;
 };
 
 const Layout: React.FC<LayoutProps> = ({
@@ -37,7 +37,7 @@ const Layout: React.FC<LayoutProps> = ({
   useSolid,
   always,
   fullWidth,
-  noToggle,
+  showToggle,
 }) => {
   const router = useRouter();
   const pageIndex = actions.navs?.findIndex((nav) => nav.href === router.pathname);
@@ -138,7 +138,7 @@ const Layout: React.FC<LayoutProps> = ({
             ) : null}
           </div>
           <div className="flex items-center top-3 right-3 h-8 gap-1 sm:gap-4">
-            {noToggle ? null : (
+            {showToggle ? (
               <button
                 className={`flex items-center justify-center h-8 top-3 right-3 rounded ${focusRing}`}
                 onClick={() => {
@@ -156,7 +156,7 @@ const Layout: React.FC<LayoutProps> = ({
                   className="w-8 h-8 sm:h-6 sm:w-6"
                 />
               </button>
-            )}
+            ) : null}
             {actions.buttonAction ? (
               <button
                 className={`flex items-center justify-center h-8 rounded ${focusRing}`}
