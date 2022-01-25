@@ -102,11 +102,11 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                 alt={member.ign + "'s Minecraft skin"}
                 width="64"
                 className={
-                  "h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated" +
+                  "h-10 w-10 shrink-0 bg-gray-300 rounded-sm pixelated" +
                   opacityClass
                 }
               />
-              <div className="ml-2 flex-grow">
+              <div className="ml-2 grow">
                 <h4
                   className={"font-semibold leading-none mb-1" + opacityClass}
                 >
@@ -116,7 +116,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                   className={"flex justify-between items-center" + opacityClass}
                 >
                   <p
-                    className={`flex-shrink-0 ${dot} ${
+                    className={`shrink-0 ${dot} ${
                       member.online ? dot__active : ""
                     }`}
                   >
@@ -126,7 +126,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                   </p>
 
                   {member.online ? (
-                    <p className="flex-grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
+                    <p className="grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
                       {(member.location ?? "").toUpperCase()}
                     </p>
                   ) : null}

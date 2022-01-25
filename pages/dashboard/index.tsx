@@ -138,9 +138,9 @@ export default function Dashboard() {
       showToggle
     >
       <div className="flex flex-col sm:flex-row sm:items-start sm:flex-wrap gap-4 lg:gap-8 w-full">
-        <MembersList className="flex-grow min-w-fit" members={members ?? []} />
+        <MembersList className="grow min-w-fit" members={members ?? []} />
         <ResourceBars
-          className="flex-grow min-w-2/5"
+          className="grow min-w-2/5"
           usages={{
             cpu: cpu ?? 0,
             ram: ram ?? 0,

@@ -6,7 +6,13 @@ import { Transition } from "@headlessui/react";
 import { focusRing } from "../lib/shorthands";
 
 import Icon from "@mdi/react";
-import { mdiClose, mdiMenu, mdiLogoutVariant, mdiBrightness3, mdiBrightness7 } from "@mdi/js";
+import {
+  mdiClose,
+  mdiMenu,
+  mdiLogoutVariant,
+  mdiBrightness3,
+  mdiBrightness7,
+} from "@mdi/js";
 
 import { oneLine as l1 } from "common-tags";
 import _throttle from "lodash/throttle";
@@ -50,7 +56,9 @@ const Layout: React.FC<LayoutProps> = ({
   showToggle,
 }) => {
   const router = useRouter();
-  const pageIndex = actions.navs?.findIndex((nav) => nav.href === router.pathname);
+  const pageIndex = actions.navs?.findIndex(
+    (nav) => nav.href === router.pathname
+  );
   const [transparent, setTransparent] = useState(always !== "solid");
   const scrollRef = useRef<HTMLElement>(null);
 
@@ -84,8 +92,11 @@ const Layout: React.FC<LayoutProps> = ({
     <div className={`flex flex-col w-full ${darkTheme ? "dark" : ""} ${color}`}>
       <header
         className={l1`w-full h-nav p-3
-                      ${transparent ? (useSolid ? color : "transparent") : "bg-primary"}
-                      transition-colors duration-300 ease-in text-on-primary flex-grow-0
+                      ${
+                        //prettier-ignore
+                        transparent ? (useSolid ? color : "transparent") : "bg-primary"
+                      }
+                      transition-colors duration-300 ease-in text-on-primary grow-0
                       top-0 left-0 right-0 sticky z-10 flex items-center justify-center`}
       >
         <div
@@ -102,7 +113,9 @@ const Layout: React.FC<LayoutProps> = ({
               >
                 <Icon
                   path={navOpen ? mdiClose : mdiMenu}
-                  title={navOpen ? "Hide navigation menu" : "Show navigation menu"}
+                  title={
+                    navOpen ? "Hide navigation menu" : "Show navigation menu"
+                  }
                   id={navOpen ? "icon-hide-nav" : "icon-show-nav"}
                   {...icon32}
                 />
@@ -125,7 +138,11 @@ const Layout: React.FC<LayoutProps> = ({
                     <Link href={nav.href}>
                       <a
                         className={l1`block font-medium pl-4 pr-6 py-2 rounded ${focusRing}
-                        ${index === pageIndex ? "text-primary-light font-bold" : ""}`}
+                        ${
+                          index === pageIndex
+                            ? "text-primary-light font-bold"
+                            : ""
+                        }`}
                       >
                         {nav.name}
                       </a>
@@ -180,7 +197,10 @@ const Layout: React.FC<LayoutProps> = ({
               >
                 {actions.buttonAction.name === "logout" && (
                   <>
-                    <span id="logout-text" className="font-medium mr-1 hidden sm:block">
+                    <span
+                      id="logout-text"
+                      className="font-medium mr-1 hidden sm:block"
+                    >
                       Log out
                     </span>
                     <Icon
@@ -198,7 +218,7 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
       <main
-        className={`flex-grow min-h-non-nav ${color} ${className ? className : ""}`}
+        className={`grow min-h-non-nav ${color} ${className ? className : ""}`}
         ref={scrollRef}
         onClick={() => {
           setNavOpen(false);
