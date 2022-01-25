@@ -10,7 +10,7 @@ import {
 import dayjs from "dayjs";
 import _once from "lodash/once";
 
-axios.defaults.baseURL = "https://omsinkrissada.sytes.net/api/minecraft/";
+axios.defaults.baseURL = "https://minesin.krissada.com/api/";
 
 export type MembersArray = Array<{
   ign: string;
@@ -52,7 +52,7 @@ type MinesinAPITokenPayload = {
 
 type MinesinAPIError = {
   reason: string;
-  code?: number; // TODO: Currently, there is a bug in the API that causes the API to not return `code`
+  code: number;
 };
 
 export const checkTokenStatus = (token: string | null | undefined): tokenStatus => {
@@ -107,7 +107,7 @@ export default class MinesinAPI {
     }
 
     this.instance = axios.create({
-      baseURL: "https://omsinkrissada.sytes.net/api/minecraft/",
+      baseURL: "https://minesin.krissada.com/api/",
       headers: { Authorization: "Bearer " + token },
     });
   }
@@ -122,18 +122,16 @@ export default class MinesinAPI {
     return makeResolvingCancelable(
       this.instance
         .get<MembersArray>("/members")
-        .then(
-          (res): MembersArray => {
-            return res.data.sort((l, r) => {
-              if (!l.online && !r.online)
-                return Date.parse(r.offlineSince ?? "") - Date.parse(l.offlineSince ?? "");
+        .then((res): MembersArray => {
+          return res.data.sort((l, r) => {
+            if (!l.online && !r.online)
+              return Date.parse(r.offlineSince ?? "") - Date.parse(l.offlineSince ?? "");
 
-              if (l.online !== r.online) return r.online ? 1 : -1;
+            if (l.online !== r.online) return r.online ? 1 : -1;
 
-              return Date.parse(l.onlineSince ?? "") - Date.parse(r.onlineSince ?? "");
-            });
-          }
-        )
+            return Date.parse(l.onlineSince ?? "") - Date.parse(r.onlineSince ?? "");
+          });
+        })
         .catch(this.#errorHandler)
     );
   };

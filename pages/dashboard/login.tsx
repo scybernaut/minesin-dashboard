@@ -122,16 +122,14 @@ export default function AuthPage() {
         router.replace("/dashboard");
       })
       .catch((err: AxiosError) => {
-        switch (err.response?.status) {
-          case 400:
-            showError("Invalid username or password");
-            break;
-          case 503:
-            showError("Couldn't connect: host is down");
-            break;
-          default:
-            showError("An error occured while trying to sign in");
-            console.error(err);
+        const status = err.response?.status || -1;
+        if (status === 401) {
+          showError("Invalid username or password");
+        } else if (status >= 500 || status < 600) {
+          showError("Couldn't connect: host is down");
+        } else {
+          showError("An error occured while trying to sign in");
+          console.error(err);
         }
       });
   };

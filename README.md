@@ -1,3 +1,3 @@
 # minesin-dashboard
 
-an alternative UI for [MINESIN dashboard](https://omsinkrissada.sytes.net/minecraft/), made with [next.js](https://nextjs.org/)
+an alternative UI for [MINESIN dashboard](https://minesin.krissada.com/), made with [next.js](https://nextjs.org/)
