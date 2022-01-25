@@ -1,6 +1,6 @@
 import { NextRouter } from "next/router";
 import { LayoutActions } from "../components/Layout";
-import { logoutOptions, routeLogout } from "./shorthands";
+import { LogoutOptions, routeLogout } from "./shorthands";
 
 export const homeActions: LayoutActions = { navs: null };
 export const dashboardActions = (router: NextRouter): LayoutActions => ({
@@ -10,6 +10,6 @@ export const dashboardActions = (router: NextRouter): LayoutActions => ({
   ],
   buttonAction: {
     name: "logout",
-    onClick: () => routeLogout(router, "logout", logoutOptions.removeToken),
+    onClick: () => routeLogout(router, "logout", LogoutOptions.removeToken),
   },
 });
