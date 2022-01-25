@@ -3,12 +3,14 @@ import { dashboardActions } from "../../lib/actions";
 import {
   checkTokenStatus,
   apiErrorHandler,
-  Member,
   TokenStatus,
 } from "../../lib/helper";
 
-import MembersList from "../../components/MembersList";
-import ResourceBars from "../../components/ResourceBars";
+import MembersList, { Member } from "../../components/MembersList";
+import ResourceBars, { Resources } from "../../components/ResourceBars";
+import ServersStatusList, {
+  ServersStatus,
+} from "../../components/ServersStatusList";
 
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -22,8 +24,11 @@ export default function Dashboard() {
   const router = useRouter();
 
   const [members, setMembers] = useState<Member[]>();
-  const [cpu, setCPU] = useState<number>();
-  const [ram, setRAM] = useState<number>();
+  const [resources, setResources] = useState<Resources>({
+    cpuPercent: 0,
+    ramPercent: 0,
+  });
+  const [statuses, setStatuses] = useState<ServersStatus>([]);
 
   const setMembersFromRaw = (members: Member[]): void => {
     members.sort((l, r) => {
@@ -86,18 +91,13 @@ export default function Dashboard() {
       if (members) setMembersFromRaw(members);
     });
 
-    type ResourcesData = {
-      cpuPercent: number;
-      ramPercent: number;
-    };
-    socket.on("resourcesStatus", (resources: ResourcesData) => {
-      setCPU(resources.cpuPercent);
-      setRAM(resources.ramPercent);
+    socket.on("resourcesStatus", (resources: Resources) => {
+      setResources(resources);
     });
 
-    // socket.on("serversStatus", (statuses) => {
-
-    // })
+    socket.on("serversStatus", (statuses) => {
+      setStatuses(statuses);
+    });
 
     socket.on("memberLocationUpdate", (updated: Member) => {
       if (!members) return;
@@ -138,14 +138,11 @@ export default function Dashboard() {
       showToggle
     >
       <div className="flex flex-col sm:flex-row sm:items-start sm:flex-wrap gap-4 lg:gap-8 w-full">
+        <div className="grow min-w-2/5 flex flex-col gap-4">
+          <ResourceBars usages={resources} />
+          <ServersStatusList statuses={statuses} />
+        </div>
         <MembersList className="grow min-w-fit" members={members ?? []} />
-        <ResourceBars
-          className="grow min-w-2/5"
-          usages={{
-            cpu: cpu ?? 0,
-            ram: ram ?? 0,
-          }}
-        />
       </div>
     </Layout>
   );

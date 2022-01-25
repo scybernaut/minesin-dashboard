@@ -4,11 +4,13 @@ import ProgressBar from "./ProgressBar";
 
 import { oneLine as l1 } from "common-tags";
 
+export type Resources = {
+  cpuPercent: number;
+  ramPercent: number;
+};
+
 interface ResourceBarProps {
-  usages: {
-    cpu: number;
-    ram: number;
-  };
+  usages: Resources;
   className?: string;
 }
 
@@ -29,26 +31,34 @@ const getBreakpoint = (value: number) => {
 };
 
 const ResourceBar: FC<ResourceBarProps> = ({ usages, className }) => {
-  const cpuColor = getBreakpoint(usages.cpu);
-  const ramColor = getBreakpoint(usages.ram);
+  const cpuColor = getBreakpoint(usages.cpuPercent);
+  const ramColor = getBreakpoint(usages.ramPercent);
 
   return (
     <div
       className={l1`bg-white text-black dark:bg-gray-800 dark:text-white
                     p-4 rounded-md ${className ? className : ""}`}
     >
-      <h2 className="text-2xl font-bold mb-4">Resources</h2>
+      <h2 className="text-2xl font-bold mb-4">Server Resources</h2>
       <div className="flex justify-between items-end">
         <h3 className="leading-relaxed font-semibold">CPU Usage</h3>
-        <span className="leading-snug number-alt">{usages.cpu.toFixed(2)}%</span>
+        <span className="leading-snug">{usages.cpuPercent.toFixed(2)}%</span>
       </div>
-      <ProgressBar color={cpuColor.bg} progress={usages.cpu} />
+      <ProgressBar
+        className="mt-1"
+        color={cpuColor.bg}
+        progress={usages.cpuPercent}
+      />
 
       <div className="flex justify-between items-end mt-4">
         <h3 className="leading-relaxed font-semibold">RAM Usage</h3>
-        <span className="leading-snug number-alt">{usages.ram.toFixed(2)}%</span>
+        <span className="leading-snug">{usages.ramPercent.toFixed(2)}%</span>
       </div>
-      <ProgressBar color={ramColor.bg} progress={usages.ram} />
+      <ProgressBar
+        className="mt-1 mb-3"
+        color={ramColor.bg}
+        progress={usages.ramPercent}
+      />
     </div>
   );
 };

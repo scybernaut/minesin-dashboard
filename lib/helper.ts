@@ -7,17 +7,6 @@ import _once from "lodash/once";
 
 axios.defaults.baseURL = "https://minesin.krissada.com/api/";
 
-export type Member = {
-  ign: string;
-  location: string | null;
-  nickname: string | null; // Unused
-  online: boolean;
-  onlineSince: string | null;
-  offlineSince: string | null;
-  skinURL: string;
-  uuid: string;
-};
-
 export type ResourceUsage = {
   percent: number;
 };

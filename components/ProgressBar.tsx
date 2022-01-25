@@ -10,17 +10,17 @@ type ProgressBarProps = {
 };
 
 const ProgressBar: FC<ProgressBarProps> = (props) => {
-  const height = props.height ?? "h-8";
+  const height = props.height ?? "h-2";
   return (
     <div
-      className={l1`w-full rounded-md overflow-hidden
+      className={l1`w-full rounded overflow-hidden
       ${height} ${props.bgColor ?? "bg-gray-300 dark:bg-gray-600"}
       ${props.className ?? ""}`}
       role="presentation"
     >
       <div
         style={{ width: props.progress + "%" }}
-        className={`${height} ${props.color} rounded-md transition-all ease-in-out duration-300`}
+        className={`${height} ${props.color} rounded transition-all ease-in-out duration-300`}
       />
     </div>
   );

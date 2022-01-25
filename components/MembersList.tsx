@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 
-import { Member } from "../lib/helper";
 import { formatUUID } from "../lib/shorthands";
 import dotCss from "./dotIndicator.module.css";
 
@@ -36,6 +35,16 @@ dayjs.updateLocale("en", {
   },
 });
 
+export type Member = {
+  ign: string;
+  location: string | null;
+  nickname: string | null; // Unused
+  online: boolean;
+  onlineSince: string | null;
+  offlineSince: string | null;
+  skinURL: string;
+  uuid: string;
+};
 interface MembersListProps {
   members: Member[];
   className?: string;
@@ -92,7 +101,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
         </div>
       </div>
       <ol className="flex flex-col gap-5">
-        {members?.map((member) => {
+        {members.map((member) => {
           const opacityClass = member.online ? "" : " opacity-70";
 
           return (
