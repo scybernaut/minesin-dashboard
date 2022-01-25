@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from "react";
 
 import { Member } from "../lib/helper";
 import { formatUUID } from "../lib/shorthands";
-import { dot, dot__active } from "./dotIndicator.module.css";
+import dotCss from "./dotIndicator.module.css";
 
 import { Switch } from "@headlessui/react";
 
@@ -116,8 +116,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                   className={"flex justify-between items-center" + opacityClass}
                 >
                   <p
-                    className={`shrink-0 ${dot} ${
-                      member.online ? dot__active : ""
+                    className={`shrink-0 ${dotCss.dot} ${
+                      member.online ? dotCss.dot__active : ""
                     }`}
                   >
                     {member.online
@@ -126,7 +126,7 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                   </p>
 
                   {member.online ? (
-                    <p className="grow flex-shrink ml-4 text-right font-medium text-sm leading-none">
+                    <p className="grow ml-4 text-right font-medium text-sm leading-none">
                       {(member.location ?? "").toUpperCase()}
                     </p>
                   ) : null}
