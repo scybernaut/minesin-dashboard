@@ -1,61 +1,132 @@
 import Layout from "../../components/Layout";
 import { dashboardActions } from "../../lib/actions";
-import MinesinAPI, { MembersArray } from "../../lib/api";
+import {
+  checkTokenStatus,
+  apiErrorHandler,
+  Member,
+  TokenStatus,
+} from "../../lib/helper";
 
 import MembersList from "../../components/MembersList";
 import ResourceBars from "../../components/ResourceBars";
 
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+import { io } from "socket.io-client";
+
+import axios from "axios";
+import { LogoutOptions, routeLogout } from "../../lib/shorthands";
 
 export default function Dashboard() {
   const router = useRouter();
 
-  const [members, setMembers] = useState<MembersArray>();
+  const [members, setMembers] = useState<Member[]>();
   const [cpu, setCPU] = useState<number>();
   const [ram, setRAM] = useState<number>();
 
-  const ignoreCanceled = (reason: { isCancelled: boolean } | any) => {
-    if (reason.isCanceled !== true) throw reason;
-  };
+  const setMembersFromRaw = (members: Member[]): void => {
+    members.sort((l, r) => {
+      if (!l.online && !r.online) {
+        if (!l.offlineSince || !r.offlineSince) {
+          console.log("member is offline but offlineSince is not present");
+          return 0;
+        }
 
-  const promisesRef = useRef<ReturnType<typeof getPromises>>();
+        return Date.parse(r.offlineSince) - Date.parse(l.offlineSince);
+      }
 
-  const getPromises = (api: MinesinAPI) => {
-    return {
-      cpu: api.getCPUUsage(),
-      ram: api.getRAMUsage(),
-      members: api.getMembers(),
-    };
+      if (l.online !== r.online) return +r.online - +l.online;
+
+      if (!l.onlineSince || !r.onlineSince) {
+        console.log("member is online but onlineSince is not present");
+        return 0;
+      }
+
+      return Date.parse(r.onlineSince) - Date.parse(l.onlineSince);
+    });
+
+    setMembers(members);
   };
 
   useEffect(() => {
-    const api = new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true);
+    // const api = new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true);
+    const token = localStorage.getItem("accessToken");
+    const tokenStatus = checkTokenStatus(token);
+    if (tokenStatus !== TokenStatus.Valid) {
+      routeLogout(router, tokenStatus || undefined, LogoutOptions.removeToken);
+      return;
+    }
 
-    const retrieveData = async () => {
-      if (document.visibilityState !== "visible") return;
+    const axiosInstance = axios.create({
+      baseURL: "https://minesin.krissada.com/api/",
+      headers: { Authorization: "Bearer " + token },
+    });
 
-      const promises = getPromises(api);
+    const socket = io("https://minesin.krissada.com", {
+      path: "/socket/",
+      auth: { token },
+    });
 
-      const ongoing = [
-        promises.cpu.promise.then(setCPU),
-        promises.ram.promise.then(setRAM),
-        promises.members.promise.then(setMembers),
-      ];
+    socket.on("connect_error", (error) => {
+      console.error(error);
+    });
 
-      Object.values(promises).forEach((promise) => promise.promise.catch(ignoreCanceled));
+    socket.on("connect", async () => {
+      console.log("socket connected");
 
-      promisesRef.current = promises;
+      // Fetch initial member data
+      const { data: members } = await axiosInstance
+        .get<Member[]>("/members")
+        .catch((err) => {
+          apiErrorHandler(router, err);
+          return { data: null };
+        });
 
-      return ongoing;
+      if (members) setMembersFromRaw(members);
+    });
+
+    type ResourcesData = {
+      cpuPercent: number;
+      ramPercent: number;
     };
+    socket.on("resourcesStatus", (resources: ResourcesData) => {
+      setCPU(resources.cpuPercent);
+      setRAM(resources.ramPercent);
+    });
 
-    retrieveData();
-    const interval = setInterval(retrieveData, 15000);
+    // socket.on("serversStatus", (statuses) => {
+
+    // })
+
+    socket.on("memberLocationUpdate", (updated: Member) => {
+      if (!members) return;
+      const index = members.findIndex((m) => m.uuid == updated.uuid);
+
+      if (index != -1) {
+        const newMembers = [...members];
+        newMembers[index].location = updated.location;
+        setMembers(newMembers);
+      }
+    });
+
+    socket.on("memberStatusUpdate", (updated: Member) => {
+      if (!members) return;
+      const index = members.findIndex((m) => m.uuid == updated.uuid);
+
+      if (index != -1) {
+        const newMembers = [...members];
+        newMembers[index].online = updated.online;
+        setMembers(newMembers);
+      }
+    });
+
+    socket.on("disconnect", () => {
+      console.log("socket disconnnected");
+    });
 
     return () => {
-      clearInterval(interval);
-      Object.values(promisesRef.current ?? {}).forEach((promise) => promise.cancel());
+      socket.close();
     };
   }, []);
 

@@ -7,8 +7,12 @@ import { Transition } from "@headlessui/react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 
-import { authenticate, checkTokenStatus, tokenStatus } from "../../lib/api";
-import { loggedOutReasons, LoggedOutReasonCode, logoutOptions } from "../../lib/shorthands";
+import { authenticate, checkTokenStatus, TokenStatus } from "../../lib/helper";
+import {
+  loggedOutReasons,
+  LoggedOutReasonCode,
+  LogoutOptions,
+} from "../../lib/shorthands";
 
 import { oneLine as l1 } from "common-tags";
 import { AxiosError } from "axios";
@@ -40,11 +44,16 @@ export default function AuthPage() {
     if (!router.isReady) return;
     const reasonCode = router.query.reason;
     const optionsMask =
-      typeof router.query.options === "string" ? parseInt(router.query.options) : NaN;
+      typeof router.query.options === "string"
+        ? parseInt(router.query.options)
+        : NaN;
 
-    if (typeof reasonCode === "string" && Object.keys(loggedOutReasons).includes(reasonCode)) {
+    if (
+      typeof reasonCode === "string" &&
+      Object.keys(loggedOutReasons).includes(reasonCode)
+    ) {
       // Should be safe to cast type as the type is already checked in the above statement
-      const safeReasonCode = reasonCode as Exclude<LoggedOutReasonCode, null>;
+      const safeReasonCode = reasonCode as LoggedOutReasonCode;
 
       const showReason = _once(() => {
         setReason(loggedOutReasons[safeReasonCode]);
@@ -66,13 +75,13 @@ export default function AuthPage() {
     }
 
     if (optionsMask != NaN) {
-      if (logoutOptions.removeToken & optionsMask) {
+      if (LogoutOptions.removeToken & optionsMask)
         localStorage.removeItem("accessToken");
-      }
 
-      if (logoutOptions.canRedirect & optionsMask) {
+      if (LogoutOptions.canRedirect & optionsMask) {
         const token = localStorage.getItem("accessToken");
-        if (checkTokenStatus(token) === tokenStatus.Valid) router.replace("/dashboard");
+        if (checkTokenStatus(token) === TokenStatus.Valid)
+          router.replace("/dashboard");
       }
     }
 
@@ -96,14 +105,13 @@ export default function AuthPage() {
     if (usernameRef.current === null) return;
     const saved = localStorage.getItem("savedUsername");
 
-    if (!saved) {
+    if (saved) {
+      setRemember(true);
+      if (!usernameRef.current.value) usernameRef.current.value = saved;
+      passwordRef.current?.focus();
+    } else {
       usernameRef.current.focus();
-      return;
     }
-
-    setRemember(true);
-    if (!usernameRef.current.value) usernameRef.current.value = saved;
-    passwordRef.current?.focus();
   }, [usernameRef.current]);
 
   const login = (e?: { preventDefault: () => any }) => {
@@ -155,7 +163,9 @@ export default function AuthPage() {
         {reason}
       </Transition>
       <form className="w-full max-w-80 sm:max-w-96 lg:max-w-108 p-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Hello, friends!</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">
+          Hello, friends!
+        </h2>
         <InputField
           label="Minecraft Username"
           id="username-field"

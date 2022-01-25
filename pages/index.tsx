@@ -6,14 +6,14 @@ import Button from "../components/Button";
 
 import { mdiChevronRight } from "@mdi/js";
 
-import { checkTokenStatus, tokenStatus } from "../lib/api";
+import { checkTokenStatus, TokenStatus } from "../lib/helper";
 
 export default function Home() {
   const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    setHasToken(checkTokenStatus(token) !== tokenStatus.Empty);
+    setHasToken(checkTokenStatus(token) !== TokenStatus.Empty);
   }, []);
 
   return (
@@ -26,7 +26,10 @@ export default function Home() {
         <h1 className="text-3xl font-extrabold mb-2">Hello there!</h1>
         <p className="text-lg text-center leading-relaxed">
           Welcome to an alternative version of{" "}
-          <a className="underline font-medium" href="https://minesin.krissada.com">
+          <a
+            className="underline font-medium"
+            href="https://minesin.krissada.com"
+          >
             MINESIN&nbsp;dashboard
           </a>
           .

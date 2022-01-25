@@ -1,9 +1,10 @@
 import { NextRouter } from "next/router";
 
-export const focusRing = "focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-70";
+export const focusRing =
+  "focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-70";
 
 export const loggedOutReasons = {
-  token_invalid: "Your token is invalid.",
+  token_invalid: "Your bearer token is invalid.",
   token_expired: "Your session has expired.",
   logout: "Logged out successfully.",
   error: "An unexpected error occurred, try signing in again.",
@@ -11,7 +12,7 @@ export const loggedOutReasons = {
 
 export type LoggedOutReasonCode = keyof typeof loggedOutReasons;
 
-export enum logoutOptions {
+export enum LogoutOptions {
   canRedirect = 0b01,
   removeToken = 0b10,
 }

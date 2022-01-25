@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 
-import { MembersArray } from "../lib/api";
+import { Member } from "../lib/helper";
 import { formatUUID } from "../lib/shorthands";
 import { dot, dot__active } from "./dotIndicator.module.css";
 
@@ -37,7 +37,7 @@ dayjs.updateLocale("en", {
 });
 
 interface MembersListProps {
-  members: MembersArray;
+  members: Member[];
   className?: string;
 }
 
@@ -62,7 +62,10 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
         <h2 className="font-bold text-2xl">Members</h2>
         <div className="flex items-center ml-4">
           <Switch.Group>
-            <Switch.Label className="mr-2 font-medium text-sm" aria-label="Show UUIDs">
+            <Switch.Label
+              className="mr-2 font-medium text-sm"
+              aria-label="Show UUIDs"
+            >
               <span className="hidden sm:inline">Show </span>UUIDs
             </Switch.Label>
             <Switch
@@ -71,7 +74,9 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                 localStorage.setItem("showUUID", enabled.toString());
                 setShowUUID(enabled);
               }}
-              className={l1`${showUUID ? "bg-blue-600" : "bg-gray-400 dark:bg-gray-500"}
+              className={l1`${
+                showUUID ? "bg-blue-600" : "bg-gray-400 dark:bg-gray-500"
+              }
                               relative inline-flex items-center h-6 rounded-full w-11
                               focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50`}
             >
@@ -97,13 +102,24 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                 alt={member.ign + "'s Minecraft skin"}
                 width="64"
                 className={
-                  "h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated" + opacityClass
+                  "h-10 w-10 flex-shrink-0 bg-gray-300 rounded-sm pixelated" +
+                  opacityClass
                 }
               />
               <div className="ml-2 flex-grow">
-                <h4 className={"font-semibold leading-none mb-1" + opacityClass}>{member.ign}</h4>
-                <div className={"flex justify-between items-center" + opacityClass}>
-                  <p className={`flex-shrink-0 ${dot} ${member.online ? dot__active : ""}`}>
+                <h4
+                  className={"font-semibold leading-none mb-1" + opacityClass}
+                >
+                  {member.ign}
+                </h4>
+                <div
+                  className={"flex justify-between items-center" + opacityClass}
+                >
+                  <p
+                    className={`flex-shrink-0 ${dot} ${
+                      member.online ? dot__active : ""
+                    }`}
+                  >
                     {member.online
                       ? "Online" + humanDuration(member.onlineSince)
                       : "Offline" + humanDuration(member.offlineSince)}
