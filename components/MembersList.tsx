@@ -37,22 +37,20 @@ dayjs.updateLocale("en", {
 
 export type Member = {
   ign: string;
-  location: string | null;
-  nickname: string | null; // Unused
-  online: boolean;
-  onlineSince: string | null;
-  offlineSince: string | null;
-  skinURL: string;
   uuid: string;
+  online: boolean;
+  since: number | null;
+  location: string;
+  skinURL: string;
 };
 interface MembersListProps {
   members: Member[];
   className?: string;
 }
 
-const humanDuration = (ISODate: string | undefined | null) => {
-  if (ISODate == undefined) return "";
-  return " for " + dayjs(ISODate).toNow(true);
+const humanDuration = (unixmillis: number | null) => {
+  if (unixmillis == undefined) return "";
+  return " for " + dayjs(unixmillis).toNow(true);
 };
 
 const MembersList: FC<MembersListProps> = ({ members, className }) => {
@@ -130,8 +128,8 @@ const MembersList: FC<MembersListProps> = ({ members, className }) => {
                     }`}
                   >
                     {member.online
-                      ? "Online" + humanDuration(member.onlineSince)
-                      : "Offline" + humanDuration(member.offlineSince)}
+                      ? "Online" + humanDuration(member.since)
+                      : "Offline" + humanDuration(member.since)}
                   </p>
 
                   {member.online ? (

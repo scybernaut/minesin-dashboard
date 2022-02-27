@@ -32,30 +32,23 @@ export default function Dashboard() {
 
   const setMembersFromRaw = (members: Member[]): void => {
     members.sort((l, r) => {
-      if (!l.online && !r.online) {
-        if (!l.offlineSince || !r.offlineSince) {
-          console.log("member is offline but offlineSince is not present");
-          return 0;
-        }
-
-        return Date.parse(r.offlineSince) - Date.parse(l.offlineSince);
-      }
-
+      // sort online status first
       if (l.online !== r.online) return +r.online - +l.online;
 
-      if (!l.onlineSince || !r.onlineSince) {
-        console.log("member is online but onlineSince is not present");
-        return 0;
+      // deal with since === null
+      if (l.since === null || r.since === null) {
+        console.warn("member.since is null");
+        return +(l.since === null) - +(r.since === null); // swap so that null is later
       }
 
-      return Date.parse(r.onlineSince) - Date.parse(l.onlineSince);
+      // `since` is not null
+      return r.since - l.since;
     });
 
     setMembers(members);
   };
 
   useEffect(() => {
-    // const api = new MinesinAPI(localStorage.getItem("accessToken") ?? "", router, true);
     const token = localStorage.getItem("accessToken");
     const tokenStatus = checkTokenStatus(token);
     if (tokenStatus !== TokenStatus.Valid) {
