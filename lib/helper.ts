@@ -5,7 +5,7 @@ import { LoggedOutReasonCode, LogoutOptions, routeLogout } from "./shorthands";
 import dayjs from "dayjs";
 import _once from "lodash/once";
 
-axios.defaults.baseURL = "https://minesin.krissada.com/api/";
+axios.defaults.baseURL = "https://mc.krissada.com/api/";
 
 export type ResourceUsage = {
   percent: number;

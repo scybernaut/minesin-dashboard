@@ -64,11 +64,11 @@ export default function Dashboard() {
     }
 
     const axiosInstance = axios.create({
-      baseURL: "https://minesin.krissada.com/api/",
+      baseURL: "https://mc.krissada.com/api/",
       headers: { Authorization: "Bearer " + token },
     });
 
-    const socket = io("https://minesin.krissada.com", {
+    const socket = io("https://mc.krissada.com", {
       path: "/socket/",
       auth: { token },
     });

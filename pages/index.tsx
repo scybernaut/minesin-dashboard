@@ -26,10 +26,7 @@ export default function Home() {
         <h1 className="text-3xl font-extrabold mb-2">Hello there!</h1>
         <p className="text-lg text-center leading-relaxed">
           Welcome to an alternative version of{" "}
-          <a
-            className="underline font-medium"
-            href="https://minesin.krissada.com"
-          >
+          <a className="underline font-medium" href="https://mc.krissada.com">
             MINESIN&nbsp;dashboard
           </a>
           .

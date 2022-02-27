@@ -6,9 +6,14 @@ export default function Map() {
   const router = useRouter();
 
   return (
-    <Layout actions={dashboardActions(router)} color="bg-gray-900" always="transparent" fullWidth>
+    <Layout
+      actions={dashboardActions(router)}
+      color="bg-gray-900"
+      always="transparent"
+      fullWidth
+    >
       <iframe
-        src="https://minesin.krissada.com/api/map/"
+        src="https://mc.krissada.com/api/map/"
         title="Minecraft world map"
         className="w-full h-non-nav"
       />
